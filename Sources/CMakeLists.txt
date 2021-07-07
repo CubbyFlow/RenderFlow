@@ -1,5 +1,5 @@
 # Target name
-set(target gl_shaded_gltfscene)
+set(target RenderFlow)
 
 # Define root directory
 set(root_dir ${CMAKE_CURRENT_SOURCE_DIR}/..)
@@ -29,8 +29,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 	)
 endif ()
 
-# Build executable
-add_executable(${target}
+# Build library
+add_library(${target}
     ${sources})
 
 # Project options
@@ -80,3 +80,7 @@ else()
         INTERFACE
     )
 endif()
+
+# Install
+install(TARGETS ${target} DESTINATION lib)
+install(DIRECTORY ${header_dir} DESTINATION include)
