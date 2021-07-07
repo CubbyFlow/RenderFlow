@@ -1,31 +1,21 @@
-# gl_shaded_gltfscene
+# RenderFlow
 
-[![CodeFactor](https://www.codefactor.io/repository/github/snowapril/gl_shaded_gltfscene/badge)](https://www.codefactor.io/repository/github/snowapril/gl_shaded_gltfscene)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/82c7218998df4b4eb236ad21ae96c1fe)](https://www.codacy.com/gh/Snowapril/gl_shaded_gltfscene/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Snowapril/gl_shaded_gltfscene&amp;utm_campaign=Badge_Grade)
-![Ubuntu github action](https://github.com/Snowapril/gl_shaded_gltfscene/actions/workflows/ubuntu.yml/badge.svg?branch=main)
-![Window github action](https://github.com/Snowapril/gl_shaded_gltfscene/actions/workflows/window.yml/badge.svg?branch=main)
-![MacOS github action](https://github.com/Snowapril/gl_shaded_gltfscene/actions/workflows/macos.yml/badge.svg?branch=main)
+[![CodeFactor](https://www.codefactor.io/repository/github/snowapril/RenderFlow/badge)](https://www.codefactor.io/repository/github/snowapril/RenderFlow)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/82c7218998df4b4eb236ad21ae96c1fe)](https://www.codacy.com/gh/Snowapril/RenderFlow/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Snowapril/RenderFlow&amp;utm_campaign=Badge_Grade)
+![Ubuntu github action](https://github.com/CubbyFlow/RenderFlow/actions/workflows/ubuntu.yml/badge.svg?branch=main)
+![Window github action](https://github.com/CubbyFlow/RenderFlow/actions/workflows/window.yml/badge.svg?branch=main)
+![MacOS github action](https://github.com/CubbyFlow/RenderFlow/actions/workflows/macos.yml/badge.svg?branch=main)
 
-This project visualizes gltf scene file with PBR shading techniques. The default lighting is Image-Based-Lighting which precomputes irradiance map and prefiltered glossy map and use them in the PBR shader. Material attributes passing implemented with simple structural uniform variables which can make performance low (This can be improved by ssbo). 
+RenderFlow is fluid visualization project for [CubbyFlow](https://github.com/utilforever/cubbyflow). 
 
-## Build
+## QuickStart
 ```bash
-git submodule init
-git submodule update
+git clone https://github.com/CubbyFlow/RenderFlow.git --recursive
+cd RenderFlow
 mkdir build
 cd build
 cmake .. && make
 ```
-
-## Run
-```bash
-# in the generated executable file directory
-gl_shaded_gltfscene -s "what_you_want.gltf" -e "hdr_environment.hdr"
-```
-Of course, without providing scene and environment files, rendering can be done with default resources.
-
-## Screenshot
-![image](https://user-images.githubusercontent.com/24654975/119116611-5d9c8700-ba63-11eb-8ecd-1682741b70bc.png)
 
 ## dependency
 *   cxxopts
@@ -38,12 +28,20 @@ Of course, without providing scene and environment files, rendering can be done 
 *   tinygltf
 *   draco
 
+## How To Contribute
+
+Contributions are always welcome, either reporting issues/bugs or forking the repository and then issuing pull requests when you have completed some additional coding that you feel will be beneficial to the main project. If you are interested in contributing in a more dedicated capacity, then please contact me.
+
+## Contact
+
+You can contact me via e-mail (sinjihng at gmail.com). I am always happy to answer questions or help with any issues you might have, and please be sure to share any additional work or your creations with me, I love seeing what other people are making.
+
 ## License
 <img align="right" src="http://opensource.org/trademarks/opensource/OSI-Approved-License-100x137.png">
 
 The class is licensed under the [MIT License](http://opensource.org/licenses/MIT):
 
-gl_shaded_gltfscene project's scene and skydome are largely referenced on [vk_shaded_gltfscene](https://github.com/nvpro-samples/vk_shaded_gltfscene)
+RenderFlow project's scene and skydome are largely referenced on [vk_shaded_gltfscene](https://github.com/nvpro-samples/vk_shaded_gltfscene)
 
 Copyright (c) 2021 Snowapril
 *   [Jihong Shin](https://github.com/Snowapril)
