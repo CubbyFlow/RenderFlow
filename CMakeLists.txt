@@ -52,6 +52,6 @@ add_subdirectory(Libraries/imgui)
 add_subdirectory(Libraries/tinyobjloader)
 
 add_subdirectory(Libraries/draco)
-file(COPY_FILE ${CMAKE_BINARY_DIR}/draco/draco_features.h Libraries/draco/src/draco/draco_features.h)
+file(COPY "${CMAKE_BINARY_DIR}/draco/draco_features.h" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/draco/src/draco/")
 
 add_subdirectory(Sources)
