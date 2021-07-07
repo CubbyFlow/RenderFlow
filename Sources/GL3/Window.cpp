@@ -1,5 +1,5 @@
-#include <GLFW/glfw3.h>
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <GL3/DebugUtils.hpp>
 #include <GL3/Window.hpp>
 #include <iostream>
