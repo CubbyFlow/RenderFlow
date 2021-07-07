@@ -3,32 +3,34 @@
 
 #include <GL3/Camera.hpp>
 
-namespace GL3 {
+namespace GL3
+{
+//!
+//! \brief      Camera class providing Perspective-projection.
+//!
+//! Inherit Camera class and overriding update method for perspective projection
+//! matrix.
+//!
+class PerspectiveCamera : public Camera
+{
+ public:
+    //! Default constructor
+    PerspectiveCamera();
+    //! Default destructor
+    ~PerspectiveCamera();
+    //! Set perspective camera properties
+    void SetProperties(float aspect, float fovDegree, float zNear, float zFar);
 
-	//!
-	//! \brief      Camera class providing Perspective-projection.
-	//!
-	//! Inherit Camera class and overriding update method for perspective projection matrix.
-	//! 
-	class PerspectiveCamera : public Camera
-	{
-	public:
-		//! Default constructor
-		PerspectiveCamera();
-		//! Default destructor
-		~PerspectiveCamera();
-		//! Set perspective camera properties
-		void SetProperties(float aspect, float fovDegree, float zNear, float zFar);
-	private:
-		//! Update perpsective projection matrix;
-		void OnUpdateMatrix() override;
+ private:
+    //! Update perpsective projection matrix;
+    void OnUpdateMatrix() override;
 
-		float _aspect;
-		float _fovDegree;
-		float _zNear;
-		float _zFar;
-	};
-
+    float _aspect;
+    float _fovDegree;
+    float _zNear;
+    float _zFar;
 };
 
-#endif //! end of PerspectiveCamera.hpp
+};  // namespace GL3
+
+#endif  //! end of PerspectiveCamera.hpp

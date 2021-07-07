@@ -1,136 +1,151 @@
-#include <GL3/Camera.hpp>
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
+#include <GL3/Camera.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-namespace GL3 {
+namespace GL3
+{
+Camera::Camera()
+    : _projection(1.0f),
+      _view(1.0f),
+      _position(0.0f),
+      _direction(0.0f, -1.0f, 0.0f),
+      _up(0.0f, 1.0f, 0.0f),
+      _speed(0.03f),
+      _uniformBuffer(0)
+{
+    //! Do nothing
+}
 
-	Camera::Camera()
-		: _projection(1.0f), _view(1.0f), _position(0.0f), 
-		  _direction(0.0f, -1.0f, 0.0f), _up(0.0f, 1.0f, 0.0f), 
-		  _speed(0.03f), _uniformBuffer(0)
-	{
-		//! Do nothing
-	}
+Camera::~Camera()
+{
+    CleanUp();
+}
 
-	Camera::~Camera()
-	{
-		CleanUp();
-	}
-	
-	bool Camera::SetupUniformBuffer()
-	{
-		glGenBuffers(1, &_uniformBuffer);
-		glBindBuffer(GL_UNIFORM_BUFFER, _uniformBuffer);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 3 + sizeof(glm::vec4), nullptr, GL_STATIC_COPY);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+bool Camera::SetupUniformBuffer()
+{
+    glGenBuffers(1, &_uniformBuffer);
+    glBindBuffer(GL_UNIFORM_BUFFER, _uniformBuffer);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 3 + sizeof(glm::vec4),
+                 nullptr, GL_STATIC_COPY);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-		_debug.SetObjectName(GL_BUFFER, _uniformBuffer, "CameraBuffer");
-		return true;
-	}
+    _debug.SetObjectName(GL_BUFFER, _uniformBuffer, "CameraBuffer");
+    return true;
+}
 
-	void Camera::SetupCamera(const glm::vec3& pos, const glm::vec3& dir, const glm::vec3& up)
-	{
-		this->_position = pos;
-		this->_direction = dir;
-		this->_up = up;
-	}
+void Camera::SetupCamera(const glm::vec3& pos, const glm::vec3& dir,
+                         const glm::vec3& up)
+{
+    this->_position = pos;
+    this->_direction = dir;
+    this->_up = up;
+}
 
-	glm::mat4 Camera::GetViewMatrix()
-	{
-		return this->_view;
-	}
+glm::mat4 Camera::GetViewMatrix()
+{
+    return this->_view;
+}
 
-	glm::mat4 Camera::GetProjectionMatrix()
-	{
-		return this->_projection;
-	}
-	
-	void Camera::BindCamera(GLuint bindingPoint) const
-	{
-		glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, _uniformBuffer);
-	}
+glm::mat4 Camera::GetProjectionMatrix()
+{
+    return this->_projection;
+}
 
-	void Camera::UnbindCamera()
-	{
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	}
-	
-	GLuint Camera::GetUniformBuffer() const
-	{
-		return _uniformBuffer;
-	}
+void Camera::BindCamera(GLuint bindingPoint) const
+{
+    glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, _uniformBuffer);
+}
 
-	void Camera::UpdateMatrix()
-	{
-		this->_view = glm::lookAt(this->_position, this->_position + this->_direction, this->_up);
+void Camera::UnbindCamera()
+{
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
 
-		OnUpdateMatrix();
+GLuint Camera::GetUniformBuffer() const
+{
+    return _uniformBuffer;
+}
 
-		if (_uniformBuffer)
-		{
-			auto scope = _debug.ScopeLabel("CameraBuffer Update");
-			glBindBuffer(GL_UNIFORM_BUFFER, _uniformBuffer);
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(_projection));
-			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(_view));
-			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), glm::value_ptr(_projection * _view));
-			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 3, sizeof(glm::vec3), glm::value_ptr(_position));
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		}
-	}
+void Camera::UpdateMatrix()
+{
+    this->_view = glm::lookAt(this->_position,
+                              this->_position + this->_direction, this->_up);
 
-	void Camera::ProcessInput(unsigned int key)
-	{
-		switch (key)
-		{
-		case GLFW_KEY_W :
-			this->_position += this->_direction * _speed;
-			break;
-		case GLFW_KEY_A:
-			this->_position -= glm::cross(this->_direction, this->_up) * _speed;
-			break;
-		case GLFW_KEY_S:
-			this->_position -= this->_direction * _speed;
-			break;
-		case GLFW_KEY_D:
-			this->_position += glm::cross(this->_direction, this->_up) * _speed;
-			break;
-		default:
-			return;
-		}
+    OnUpdateMatrix();
 
-		UpdateMatrix();
-	}
+    if (_uniformBuffer)
+    {
+        auto scope = _debug.ScopeLabel("CameraBuffer Update");
+        glBindBuffer(GL_UNIFORM_BUFFER, _uniformBuffer);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4),
+                        glm::value_ptr(_projection));
+        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4),
+                        glm::value_ptr(_view));
+        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2,
+                        sizeof(glm::mat4), glm::value_ptr(_projection * _view));
+        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 3,
+                        sizeof(glm::vec3), glm::value_ptr(_position));
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    }
+}
 
-	void Camera::ProcessCursorPos(double xpos, double ypos)
-	{
-		static bool bFirstCall = true;
-		static glm::dvec2 lastCursorPos;
-		
-		const glm::dvec2 cursorPos(xpos, ypos);
-		if (bFirstCall)
-		{
-			lastCursorPos = cursorPos;
-			bFirstCall = false;
-		}
+void Camera::ProcessInput(unsigned int key)
+{
+    switch (key)
+    {
+        case GLFW_KEY_W:
+            this->_position += this->_direction * _speed;
+            break;
+        case GLFW_KEY_A:
+            this->_position -= glm::cross(this->_direction, this->_up) * _speed;
+            break;
+        case GLFW_KEY_S:
+            this->_position -= this->_direction * _speed;
+            break;
+        case GLFW_KEY_D:
+            this->_position += glm::cross(this->_direction, this->_up) * _speed;
+            break;
+        default:
+            return;
+    }
 
-		constexpr float sensitivity = 8e-2f;
-		const float xoffset = static_cast<float>(lastCursorPos.x - cursorPos.x) * sensitivity;
-		const float yoffset = static_cast<float>(lastCursorPos.y - cursorPos.y) * sensitivity;
-		lastCursorPos = cursorPos;
+    UpdateMatrix();
+}
 
-		//! create quaternion matrix with up vector and yaw angle.
-		auto yawQuat	= glm::angleAxis(glm::radians(xoffset), this->_up);
-		//! create quaternion matrix with right vector and pitch angle.
-		auto pitchQuat	= glm::angleAxis(glm::radians(yoffset), glm::cross(this->_direction, this->_up));
+void Camera::ProcessCursorPos(double xpos, double ypos)
+{
+    static bool bFirstCall = true;
+    static glm::dvec2 lastCursorPos;
 
-		this->_direction = glm::normalize(yawQuat * pitchQuat) * this->_direction;
-		UpdateMatrix();
-	}
+    const glm::dvec2 cursorPos(xpos, ypos);
+    if (bFirstCall)
+    {
+        lastCursorPos = cursorPos;
+        bFirstCall = false;
+    }
 
-	void Camera::CleanUp()
-	{
-		if (_uniformBuffer) glDeleteBuffers(1, &_uniformBuffer);
-	}
-};
+    constexpr float sensitivity = 8e-2f;
+    const float xoffset =
+        static_cast<float>(lastCursorPos.x - cursorPos.x) * sensitivity;
+    const float yoffset =
+        static_cast<float>(lastCursorPos.y - cursorPos.y) * sensitivity;
+    lastCursorPos = cursorPos;
+
+    //! create quaternion matrix with up vector and yaw angle.
+    auto yawQuat = glm::angleAxis(glm::radians(xoffset), this->_up);
+    //! create quaternion matrix with right vector and pitch angle.
+    auto pitchQuat = glm::angleAxis(glm::radians(yoffset),
+                                    glm::cross(this->_direction, this->_up));
+
+    this->_direction = glm::normalize(yawQuat * pitchQuat) * this->_direction;
+    UpdateMatrix();
+}
+
+void Camera::CleanUp()
+{
+    if (_uniformBuffer)
+        glDeleteBuffers(1, &_uniformBuffer);
+}
+};  // namespace GL3
