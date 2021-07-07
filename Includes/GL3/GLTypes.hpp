@@ -42,4 +42,4 @@ typedef struct __GLsync* GLsync;
 typedef unsigned short GLhalfNV;
 typedef GLintptr GLvdpauSurfaceNV;
 
-#endif //! end of GLTypes.hpp
+#endif  //! end of GLTypes.hpp

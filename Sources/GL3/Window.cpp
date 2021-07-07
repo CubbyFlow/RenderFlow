@@ -1,177 +1,185 @@
-#include <GL3/Window.hpp>
-#include <GL3/DebugUtils.hpp>
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
+#include <GL3/DebugUtils.hpp>
+#include <GL3/Window.hpp>
 #include <iostream>
 
 namespace
 {
-	std::vector<GL3::Window*> gWindowPtrs;
+std::vector<GL3::Window*> gWindowPtrs;
 
-	GL3::Window* GetMatchedWindow(GLFWwindow* window)
-	{
-		for (auto windowPtr : gWindowPtrs)
-			if (window == windowPtr->GetGLFWWindow())
-				return windowPtr;
-		return nullptr;
-	}
+GL3::Window* GetMatchedWindow(GLFWwindow* window)
+{
+    for (auto windowPtr : gWindowPtrs)
+        if (window == windowPtr->GetGLFWWindow())
+            return windowPtr;
+    return nullptr;
+}
 
-	void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
-	{
-		GetMatchedWindow(window)->ProcessCursorPos(xpos, ypos);
-	}
+void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
+{
+    GetMatchedWindow(window)->ProcessCursorPos(xpos, ypos);
+}
 
-	void ResizeCallback(GLFWwindow* window, int width, int height)
-	{
-		GetMatchedWindow(window)->ProcessResize(width, height);
-	}
-};
-
+void ResizeCallback(GLFWwindow* window, int width, int height)
+{
+    GetMatchedWindow(window)->ProcessResize(width, height);
+}
+};  // namespace
 
 namespace GL3
 {
-	Window::Window()
-		: _window(nullptr), _windowExtent(0, 0)
-	{
-		gWindowPtrs.push_back(this);
-	}
+Window::Window() : _window(nullptr), _windowExtent(0, 0)
+{
+    gWindowPtrs.push_back(this);
+}
 
-	Window::Window(const std::string& title, int width, int height)
-	{
-		gWindowPtrs.push_back(this);
-		Initialize(title, width, height);
-	}
+Window::Window(const std::string& title, int width, int height)
+{
+    gWindowPtrs.push_back(this);
+    Initialize(title, width, height);
+}
 
-	Window::~Window()
-	{
-		for (auto iter = gWindowPtrs.begin(); iter != gWindowPtrs.end();)
-		{
-			if (this == *iter)
-				iter = gWindowPtrs.erase(iter);
-			else
-				++iter;
-		}
-		CleanUp();
-	}
+Window::~Window()
+{
+    for (auto iter = gWindowPtrs.begin(); iter != gWindowPtrs.end();)
+    {
+        if (this == *iter)
+            iter = gWindowPtrs.erase(iter);
+        else
+            ++iter;
+    }
+    CleanUp();
+}
 
-	bool Window::Initialize(const std::string& title, int width, int height, GLFWwindow* sharedWindow)
-	{
-		this->_windowTitle = title;
-		this->_windowExtent = glm::ivec2(width, height);
+bool Window::Initialize(const std::string& title, int width, int height,
+                        GLFWwindow* sharedWindow)
+{
+    this->_windowTitle = title;
+    this->_windowExtent = glm::ivec2(width, height);
 
-		if (glfwInit() == GLFW_FALSE)
-		{
-			std::cerr << "[Window:Initialize] Failed to initialize GLFW" << std::endl;
-			return false;
-		}
+    if (glfwInit() == GLFW_FALSE)
+    {
+        std::cerr << "[Window:Initialize] Failed to initialize GLFW"
+                  << std::endl;
+        return false;
+    }
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #ifdef __APPLE__
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 #endif
 
-		this->_window = glfwCreateWindow(width, height, title.c_str(), nullptr, sharedWindow);
-		std::cout << "_________________________________\n";
-		std::cout << "OpenGL Version :\n";
-		std::cout << " - requesting : #version 450 core\n";
-		std::cout << "_________________________________\n";
-		if (this->_window == nullptr)
-		{
-			std::cerr << "[Window:Initialize] Failed to Create GLFW Window" << std::endl;
-			DebugUtils::PrintStack();
-			return false;
-		}
+    this->_window =
+        glfwCreateWindow(width, height, title.c_str(), nullptr, sharedWindow);
+    std::cout << "_________________________________\n";
+    std::cout << "OpenGL Version :\n";
+    std::cout << " - requesting : #version 450 core\n";
+    std::cout << "_________________________________\n";
+    if (this->_window == nullptr)
+    {
+        std::cerr << "[Window:Initialize] Failed to Create GLFW Window"
+                  << std::endl;
+        DebugUtils::PrintStack();
+        return false;
+    }
 
-		glfwMakeContextCurrent(this->_window);
+    glfwMakeContextCurrent(this->_window);
 
-		if (gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) == false)
-		{
-			std::cerr << "[Window:Initialize] Failed to initialize GLAD" << std::endl;
-			DebugUtils::PrintStack();
-			return false;
-		}
-		std::cout << "Compatible Devices :\n";
-		std::cout << glGetString(GL_VENDOR) << '\n';
-		std::cout << glGetString(GL_RENDERER) << '\n';
-		std::cout << "_________________________________\n";
+    if (gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) == false)
+    {
+        std::cerr << "[Window:Initialize] Failed to initialize GLAD"
+                  << std::endl;
+        DebugUtils::PrintStack();
+        return false;
+    }
+    std::cout << "Compatible Devices :\n";
+    std::cout << glGetString(GL_VENDOR) << '\n';
+    std::cout << glGetString(GL_RENDERER) << '\n';
+    std::cout << "_________________________________\n";
 
-		glEnable(GL_DEBUG_OUTPUT);
-		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-		glDebugMessageCallback(DebugUtils::DebugLog, nullptr);
-		glDebugMessageControl(GL_DEBUG_SOURCE_THIRD_PARTY, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
-		glDebugMessageControl(GL_DEBUG_SOURCE_APPLICATION, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, false);
-		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_LOW, 0, NULL, false);
-		glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 0, NULL, false);
-		
-		glfwSetInputMode(this->_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		glfwSetCursorPosCallback(this->_window, ::CursorPosCallback);
-		glfwSetFramebufferSizeCallback(this->_window, ::ResizeCallback);
-		return this->_window != nullptr;
-	}
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(DebugUtils::DebugLog, nullptr);
+    glDebugMessageControl(GL_DEBUG_SOURCE_THIRD_PARTY, GL_DONT_CARE,
+                          GL_DONT_CARE, 0, NULL, true);
+    glDebugMessageControl(GL_DEBUG_SOURCE_APPLICATION, GL_DONT_CARE,
+                          GL_DONT_CARE, 0, NULL, false);
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_LOW, 0,
+                          NULL, false);
+    glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 0,
+                          NULL, false);
 
-	void Window::CleanUp()
-	{
-		if (this->_window)
-			glfwDestroyWindow(this->_window);
-		//! If there is no more glfw window, cleanup context too.
-		if (gWindowPtrs.empty())
-			glfwTerminate();
-	}
+    glfwSetInputMode(this->_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(this->_window, ::CursorPosCallback);
+    glfwSetFramebufferSizeCallback(this->_window, ::ResizeCallback);
+    return this->_window != nullptr;
+}
 
-	GLFWwindow* Window::GetGLFWWindow()
-	{
-		return this->_window;
-	}
+void Window::CleanUp()
+{
+    if (this->_window)
+        glfwDestroyWindow(this->_window);
+    //! If there is no more glfw window, cleanup context too.
+    if (gWindowPtrs.empty())
+        glfwTerminate();
+}
 
-	glm::ivec2 Window::GetWindowExtent() const
-	{
-		return this->_windowExtent;
-	}
+GLFWwindow* Window::GetGLFWWindow()
+{
+    return this->_window;
+}
 
-	//! Process Input
-	void Window::ProcessInput() const
-	{
-		for (unsigned int key = GLFW_KEY_SPACE; key <= GLFW_KEY_LAST; ++key)
-			if (glfwGetKey(_window, key) == GLFW_PRESS)
-			{
-				for (auto& callback : _keyCallbacks)
-					callback(key);
-			}
-	}
+glm::ivec2 Window::GetWindowExtent() const
+{
+    return this->_windowExtent;
+}
 
-	void Window::ProcessCursorPos(double xpos, double ypos) const
-	{
-		for (auto& callback : _cursorPosCallbacks)
-			callback(xpos, ypos);
-	}
-	
-	void Window::ProcessResize(int width, int height)
-	{
-		_windowExtent = glm::ivec2(width, height);
-		for (auto& callback : _resizeCallbacks)
-			callback(width, height);
-	}
+//! Process Input
+void Window::ProcessInput() const
+{
+    for (unsigned int key = GLFW_KEY_SPACE; key <= GLFW_KEY_LAST; ++key)
+        if (glfwGetKey(_window, key) == GLFW_PRESS)
+        {
+            for (auto& callback : _keyCallbacks)
+                callback(key);
+        }
+}
 
-	void Window::operator+=(const KeyCallback& callback)
-	{
-		_keyCallbacks.push_back(callback);
-	}
+void Window::ProcessCursorPos(double xpos, double ypos) const
+{
+    for (auto& callback : _cursorPosCallbacks)
+        callback(xpos, ypos);
+}
 
-	void Window::operator+=(const CursorPosCallback& callback)
-	{
-		_cursorPosCallbacks.push_back(callback);
-	}
+void Window::ProcessResize(int width, int height)
+{
+    _windowExtent = glm::ivec2(width, height);
+    for (auto& callback : _resizeCallbacks)
+        callback(width, height);
+}
 
-	void Window::operator+=(const ResizeCallback& callback)
-	{
-		_resizeCallbacks.push_back(callback);
-	}
+void Window::operator+=(const KeyCallback& callback)
+{
+    _keyCallbacks.push_back(callback);
+}
 
-	float Window::GetAspectRatio() const
-	{
-		return static_cast<float>(_windowExtent.x) / static_cast<float>(_windowExtent.y);
-	}
-};
+void Window::operator+=(const CursorPosCallback& callback)
+{
+    _cursorPosCallbacks.push_back(callback);
+}
+
+void Window::operator+=(const ResizeCallback& callback)
+{
+    _resizeCallbacks.push_back(callback);
+}
+
+float Window::GetAspectRatio() const
+{
+    return static_cast<float>(_windowExtent.x) /
+           static_cast<float>(_windowExtent.y);
+}
+};  // namespace GL3

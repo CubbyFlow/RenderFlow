@@ -23,4 +23,4 @@ typedef SSIZE_T ssize_t;
 #define UNUSED_VARIABLE(x) ((void)x)
 #endif
 
-#endif //! end of Macros.hpp
+#endif  //! end of Macros.hpp

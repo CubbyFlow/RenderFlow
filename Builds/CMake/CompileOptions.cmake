@@ -3,8 +3,8 @@
 #
 
 # Set warnings as errors flag
-option(OSS_CPP_WARNINGS_AS_ERRORS "Treat all warnings as errors" ON)
-if(OSS_CPP_WARNINGS_AS_ERRORS)
+option(RENDER_FLOW_WARNINGS_AS_ERRORS "Treat all warnings as errors" ON)
+if(RENDER_FLOW_WARNINGS_AS_ERRORS)
 	if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 		set(WARN_AS_ERROR_FLAGS	"/WX")
 	else()
