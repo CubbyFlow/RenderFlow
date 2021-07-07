@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.8.2 FATAL_ERROR)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
 # Declare project
-project(gl_shaded_gltfscene)
+project(RenderFlow)
 
 # Set output directories
 set(DEFAULT_CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
@@ -34,7 +34,10 @@ include(Builds/CMake/CompileOptions.cmake)
 # Build type - Release by default
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
+elseif(CMAKE_BUILD_TYPE MATCHES "Debug")
+    add_definitions(-DDEBUG)
 endif()
+message(STATUS "CMake build type: ${CMAKE_BUILD_TYPE}")
 
 # Overrides
 set(CMAKE_MACOSX_RPATH ON)
@@ -47,8 +50,5 @@ add_subdirectory(Libraries/glad)
 add_subdirectory(Libraries/glfw)
 add_subdirectory(Libraries/imgui)
 add_subdirectory(Libraries/tinyobjloader)
-
 add_subdirectory(Libraries/draco)
-include_directories(${PROJECT_BINARY_DIR} /draco)
-
 add_subdirectory(Sources)
