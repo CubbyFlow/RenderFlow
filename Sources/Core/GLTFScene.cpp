@@ -14,16 +14,24 @@
 #define TINYGLTF_USE_CPP14
 
 #if defined(_MSC_VER)
+	#pragma warning(push)
 	#pragma warning(disable:4100)
 	#pragma warning(disable:4804)
 	#pragma warning(disable:4127)
 	#pragma warning(disable:4018)
 #elif (defined(__GNUC__) || defined(__GNUG__)) && !defined(__clang__)
+	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wbool-compare"
 	#pragma GCC diagnostic ignored "-Wsign-compare"
 #endif
 
 #include <tinygltf/tiny_gltf.h>
+
+#if defined(_MSC_VER)
+	#pragma warning(pop)
+#elif (defined(__GNUC__) || defined(__GNUG__)) && !defined(__clang__)
+	#pragma GCC diagnostic pop
+#endif
 
 namespace Core {
 
@@ -607,7 +615,7 @@ namespace Core {
 		animation.samplerCount = static_cast<int>(anim.samplers.size());
 
 		for (const auto& channel : anim.channels)
-			ProcessChannel(model, channel);
+			ProcessChannel(channel);
 
 		for (const auto& sampler : anim.samplers)
 			ProcessSampler(model, sampler);
@@ -615,7 +623,7 @@ namespace Core {
 		_sceneAnims.emplace_back(std::move(animation));
 	}
 
-	void GLTFScene::ProcessChannel(const tinygltf::Model& model, const tinygltf::AnimationChannel& channel)
+	void GLTFScene::ProcessChannel(const tinygltf::AnimationChannel& channel)
 	{
 		GLTFChannel newChannel;
 		newChannel.samplerIndex = channel.sampler;
