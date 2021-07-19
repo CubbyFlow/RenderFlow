@@ -55,6 +55,7 @@ set(RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Resources/")
 
 # Project modules
 add_subdirectory(Libraries/glad)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 add_subdirectory(Libraries/glfw)
 add_subdirectory(Libraries/imgui)
 add_subdirectory(Libraries/cubbyflow)
