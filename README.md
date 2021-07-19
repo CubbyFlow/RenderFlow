@@ -5,6 +5,7 @@
 ![Ubuntu github action](https://github.com/CubbyFlow/RenderFlow/actions/workflows/ubuntu.yml/badge.svg?branch=main)
 ![Window github action](https://github.com/CubbyFlow/RenderFlow/actions/workflows/window.yml/badge.svg?branch=main)
 ![MacOS github action](https://github.com/CubbyFlow/RenderFlow/actions/workflows/macos.yml/badge.svg?branch=main)
+[![codecov](https://codecov.io/gh/CubbyFlow/RenderFlow/branch/main/graph/badge.svg?token=DEXQCY7L76)](https://codecov.io/gh/CubbyFlow/RenderFlow)
 
 RenderFlow is fluid visualization project for [CubbyFlow](https://github.com/utilforever/cubbyflow). 
 
