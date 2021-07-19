@@ -44,6 +44,9 @@ if (CMAKE_BUILD_TYPE MATCHES Debug AND CMAKE_COMPILER_IS_GNUCXX AND BUILD_COVERA
     setup_target_for_coverage(${PROJECT_NAME}_coverage UnitTests coverage)
 endif()
 
+# Some project don't build - SonarCloud only
+option(BUILD_SONARCLOUD "Build for SonarCloud" OFF)
+
 # Overrides
 set(CMAKE_MACOSX_RPATH ON)
 
@@ -54,7 +57,6 @@ set(RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Resources/")
 add_subdirectory(Libraries/glad)
 add_subdirectory(Libraries/glfw)
 add_subdirectory(Libraries/imgui)
-set(BUILD_SONARCLOUD ON)
 add_subdirectory(Libraries/cubbyflow)
 add_subdirectory(Libraries/draco)
 file(COPY "${CMAKE_BINARY_DIR}/draco/draco_features.h" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/draco/src/draco/")
