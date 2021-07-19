@@ -56,3 +56,6 @@ add_subdirectory(Libraries/draco)
 file(COPY "${CMAKE_BINARY_DIR}/draco/draco_features.h" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/draco/src/draco/")
 
 add_subdirectory(Sources)
+add_subdirectory(Tests/UnitTests)
+add_subdirectory(Extensions/Fluid2GLTF)
+add_subdirectory(Extensions/FlowEditor)
