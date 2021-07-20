@@ -1,20 +1,25 @@
 # Target name
 set(target UnitTests)
 
+# Includes
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Includes
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Libraries/doctest
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 # Sources
 file(GLOB_RECURSE sources
     ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+
+# Build executable
+add_executable(${target}
+    ${sources})
 
 # Project options
 set_target_properties(${target}
     PROPERTIES
     ${DEFAULT_PROJECT_OPTIONS}
-)
-
-# Include doctest
-target_include_directories(${target} 
-    PRIVATE 
-    ../../Libraries/CubbyFlow/Libraries/doctest/include
 )
 
 # Compile options
@@ -37,4 +42,5 @@ target_compile_definitions(${target}
 target_link_libraries(${target}
     PRIVATE
     ${DEFAULT_LINKER_OPTIONS}
+	${DEFAULT_LIBRARIES}
     RenderFlow)
