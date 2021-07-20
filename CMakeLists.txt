@@ -5,7 +5,7 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
 # Include cmake modules
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Builds/CMake")
 
 # Declare project
 project(RenderFlow)
@@ -19,12 +19,19 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 # Set enable output of compile commands during generation
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Find CubbyFlow package in local
+find_package(CubbyFlow REQUIRED)
+if (NOT CUBBYFLOW_FOUND)
+  message(FATAL_ERROR "CubbyFlow is not found.")
+endif()
+
 # Includes
 include_directories(Includes)
 include_directories(Resources)
 include_directories(Libraries)
 include_directories(Libraries/glad)
-include_directories(Libraries/cubbyflow/Includes)
+include_directories(${CubbyFlow_INCLUDE_DIR})
+include_directories(Libraries/glm)
 include_directories(Libraries/imgui)
 include_directories(Libraries/tinygltf)
 include_directories(Libraries/glfw/include)
