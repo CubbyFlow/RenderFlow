@@ -71,6 +71,8 @@ add_subdirectory(Libraries/imgui)
 SET(DRACO_JS_GLUE OFF CACHE BOOL "" FORCE)
 add_subdirectory(Libraries/draco)
 file(COPY "${CMAKE_BINARY_DIR}/draco/draco_features.h" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/draco/src/draco/")
+add_subdirectory(Libraries/tinyobjloader)
+
 add_subdirectory(Sources)
 add_subdirectory(Extensions/Fluid2GLTF)
 add_subdirectory(Extensions/FlowEditor)

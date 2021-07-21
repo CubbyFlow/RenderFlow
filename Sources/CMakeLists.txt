@@ -65,6 +65,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         glad
         glfw
         draco
+        tinyobjloader
         INTERFACE
     )
 else()
