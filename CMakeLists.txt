@@ -59,6 +59,7 @@ add_subdirectory(Libraries/glfw)
 add_subdirectory(Libraries/imgui)
 add_subdirectory(Libraries/draco)
 file(COPY "${CMAKE_BINARY_DIR}/draco/draco_features.h" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/draco/src/draco/")
+add_subdirectory(Libraries/tinyobjloader)
 
 add_subdirectory(Sources)
 add_subdirectory(Tests/UnitTests)
