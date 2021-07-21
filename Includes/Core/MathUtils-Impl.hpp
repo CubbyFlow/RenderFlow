@@ -61,6 +61,8 @@ Type Step(Type prev, Type next, const float keyframe)
     return keyframe >= 1.0 ? next : prev;
 }
 
+}  // namespace Interpolation
+
 namespace Transform
 {
 template <typename Type>
