@@ -10,24 +10,34 @@
 RenderFlow is fluid visualization project for [CubbyFlow](https://github.com/utilforever/cubbyflow). 
 
 ## QuickStart
+RenderFlow need CubbyFlow dependency. You need to install CubbyFlow before configuration
+```bash
+git clone https://github.com/CubbyFlow/CubbyFlow.git --recursive
+mkdir CubbyFlow/build CubbyFlow/install
+cd CubbyFlow/build
+cmake .. -DCMAKE_INSTALL_PREFIX=../install
+cmake --build . --target install
+```
+
+After install header & library of the CubbyFlow, Now you can configure RenderFlow.
 ```bash
 git clone https://github.com/CubbyFlow/RenderFlow.git --recursive
 cd RenderFlow
 mkdir build
 cd build
-cmake .. && make
+cmake .. -DCUBBYFLOW_INSTALL_DIR=${DIR_YOU_INSTALLED} && make
 ```
 
 ## dependency
-*   cxxopts
-*   glad
-*   glfw
-*   glm
-*   imgui
-*   stb_image
-*   tinyobjloader
-*   tinygltf
-*   draco
+*   [CubbyFlow](https://github.com/CubbyFlow/CubbyFlow)
+*   [cxxopts](https://github.com/jarro2783/cxxopts)
+*   [glad](https://github.com/Dav1dde/glad)
+*   [glfw](https://github.com/glfw/glfw)
+*   [imgui](https://github.com/ocornut/imgui)
+*   [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
+*   [tinygltf](https://github.com/syoyo/tinygltf)
+*   [draco](https://github.com/google/draco)
+*   [doctest](https://github.com/onqtam/doctest)
 
 ## How To Contribute
 
