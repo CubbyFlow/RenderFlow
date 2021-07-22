@@ -1,4 +1,4 @@
-#include <FlowEditorApp.hpp>
+#include "FlowEditorApp.hpp"
 #include <GL3/Window.hpp>
 #include <GL3/PerspectiveCamera.hpp>
 #include <GL3/Shader.hpp>
@@ -17,6 +17,7 @@ FlowEditorApp::~FlowEditorApp()
 
 bool FlowEditorApp::OnInitialize(std::shared_ptr<GL3::Window> window, const cxxopts::ParseResult& configure)
 {
+	UNUSED_VARIABLE(configure);
 	//! Add perspective camera with default settings
 	auto defaultCam = std::make_shared<GL3::PerspectiveCamera>();
 
