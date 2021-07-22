@@ -1,19 +1,11 @@
 # Target name
 set(target Fluid2GLTF)
 
-# Define root directory
-set(root_dir ${CMAKE_CURRENT_SOURCE_DIR}/../..)
-
 # Includes
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${root_dir}/Includes
-)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Sources
-file(GLOB header_dir
-    ${root_dir}/Includes
-)
+file(GLOB header_dir ${root_dir}/Includes)
 
 file(GLOB_RECURSE headers
     ${header_dir}/*.hpp
