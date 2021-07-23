@@ -1,4 +1,4 @@
-#include <Core/AssetLoader.hpp>
+#include <Common/AssetLoader.hpp>
 #include <GL3/DebugUtils.hpp>
 #include <algorithm>
 #include <glm/gtc/matrix_transform.hpp>
@@ -126,12 +126,12 @@ inline bool operator<(const PackedVertex& v1, const PackedVertex& v2)
     return false;
 }
 
-namespace Core
+namespace Common
 {
 bool AssetLoader::LoadObjFile(const std::string& path,
                               std::vector<float>& vertices,
                               std::vector<unsigned int>& indices,
-                              Core::VertexFormat format)
+                              Common::VertexFormat format)
 {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -189,7 +189,7 @@ bool AssetLoader::LoadObjFile(const std::string& path,
             glm::vec2 texCoord[3];
             glm::vec3 normal[3];
 
-            if (static_cast<int>(format & Core::VertexFormat::Position3))
+            if (static_cast<int>(format & Common::VertexFormat::Position3))
             {
                 for (int k = 0; k < 3; k++)
                 {
@@ -204,7 +204,7 @@ bool AssetLoader::LoadObjFile(const std::string& path,
                 }
             }
 
-            if (static_cast<int>(format & Core::VertexFormat::Normal3))
+            if (static_cast<int>(format & Common::VertexFormat::Normal3))
             {
                 bool invalidNormal = false;
                 if (attrib.normals.size() > 0)
@@ -258,7 +258,7 @@ bool AssetLoader::LoadObjFile(const std::string& path,
                 }
             }
 
-            if (static_cast<int>(format & Core::VertexFormat::TexCoord2))
+            if (static_cast<int>(format & Common::VertexFormat::TexCoord2))
             {
                 if (attrib.texcoords.size() > 0)
                 {
@@ -308,16 +308,16 @@ bool AssetLoader::LoadObjFile(const std::string& path,
                 if (iter == packedVerticesMap.end())
                 {
                     if (static_cast<int>(format &
-                                         Core::VertexFormat::Position3))
+                                         Common::VertexFormat::Position3))
                         vertices.insert(
                             vertices.end(),
                             { position[k].x, position[k].y, position[k].z });
-                    if (static_cast<int>(format & Core::VertexFormat::Normal3))
+                    if (static_cast<int>(format & Common::VertexFormat::Normal3))
                         vertices.insert(
                             vertices.end(),
                             { normal[k].x, normal[k].y, normal[k].z });
                     if (static_cast<int>(format &
-                                         Core::VertexFormat::TexCoord2))
+                                         Common::VertexFormat::TexCoord2))
                         vertices.insert(vertices.end(),
                                         { texCoord[k].x, texCoord[k].y });
                     unsigned int newIndex =
@@ -378,4 +378,4 @@ void AssetLoader::FreeImage(void* pixels)
     stbi_image_free(pixels);
 }
 
-};  // namespace Core
+};  // namespace Common

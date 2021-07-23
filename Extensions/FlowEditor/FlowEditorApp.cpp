@@ -2,7 +2,7 @@
 #include <GL3/Window.hpp>
 #include <GL3/PerspectiveCamera.hpp>
 #include <GL3/Shader.hpp>
-#include <Core/Macros.hpp>
+#include <Common/Macros.hpp>
 #include <glad/glad.h>
 
 FlowEditorApp::FlowEditorApp()

@@ -1,5 +1,5 @@
-#include <Core/GLTFScene.hpp>
-#include <Core/MathUtils.hpp>
+#include <Common/GLTFScene.hpp>
+#include <Common/MathUtils.hpp>
 #include <cassert>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -33,7 +33,7 @@
 #pragma GCC diagnostic pop
 #endif
 
-namespace Core
+namespace Common
 {
 bool GLTFExtension::CheckRequiredExtensions(const tinygltf::Model& model)
 {
@@ -77,7 +77,7 @@ GLTFScene::~GLTFScene()
 bool GLTFScene::Initialize(const std::string& filename, VertexFormat format,
                            ImageCallback imageCallback)
 {
-    assert(static_cast<int>(format & Core::VertexFormat::Position3) &&
+    assert(static_cast<int>(format & Common::VertexFormat::Position3) &&
            "Scene model must contain Position attribute");
 
     tinygltf::Model model;
@@ -1008,4 +1008,4 @@ void GLTFScene::ReleaseSourceData()
     _texCoords.clear();
     _indices.clear();
 }
-};  // namespace Core
+};  // namespace Common

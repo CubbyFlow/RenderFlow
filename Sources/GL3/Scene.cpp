@@ -1,5 +1,5 @@
 #include <glad/glad.h>
-#include <Core/Macros.hpp>
+#include <Common/Macros.hpp>
 #include <GL3/Scene.hpp>
 #include <GL3/Shader.hpp>
 #include <algorithm>
@@ -21,11 +21,11 @@ Scene::~Scene()
     //! Do nothing
 }
 
-bool Scene::Initialize(const std::string& filename, Core::VertexFormat format)
+bool Scene::Initialize(const std::string& filename, Common::VertexFormat format)
 {
     auto timerStart = std::chrono::high_resolution_clock::now();
 
-    if (!Core::GLTFScene::Initialize(
+    if (!Common::GLTFScene::Initialize(
             filename, format, [&](const tinygltf::Image& image) {
                 std::string name =
                     image.name.empty()
@@ -62,7 +62,7 @@ bool Scene::Initialize(const std::string& filename, Core::VertexFormat format)
     //! Resize vertex buffer storage with number of vertex attribute type in
     //! given format, additionally index buffer also added.
     _buffers.resize(
-        std::bitset<static_cast<unsigned int>(Core::VertexFormat::Last)>(
+        std::bitset<static_cast<unsigned int>(Common::VertexFormat::Last)>(
             static_cast<unsigned int>(format))
             .count() +
         1);
@@ -74,11 +74,11 @@ bool Scene::Initialize(const std::string& filename, Core::VertexFormat format)
 
     //! Temporary buffer binding lambda function
     auto bindingBuffer = [&](void* data, size_t num,
-                             Core::VertexFormat attribute) {
+                             Common::VertexFormat attribute) {
         if (static_cast<int>(format & attribute))
         {
             const size_t numFloats =
-                Core::VertexHelper::GetNumberOfFloats(attribute);
+                Common::VertexHelper::GetNumberOfFloats(attribute);
             const size_t stride = numFloats * sizeof(float);
             glNamedBufferStorage(_buffers[index], num * stride, data,
                                  GL_MAP_READ_BIT);
@@ -95,14 +95,14 @@ bool Scene::Initialize(const std::string& filename, Core::VertexFormat format)
 
     //! Create & Bind the vertex buffers
     bindingBuffer(_positions.data(), _positions.size(),
-                  Core::VertexFormat::Position3);
+                  Common::VertexFormat::Position3);
     bindingBuffer(_normals.data(), _normals.size(),
-                  Core::VertexFormat::Normal3);
+                  Common::VertexFormat::Normal3);
     bindingBuffer(_tangents.data(), _tangents.size(),
-                  Core::VertexFormat::Tangent4);
-    bindingBuffer(_colors.data(), _colors.size(), Core::VertexFormat::Color4);
+                  Common::VertexFormat::Tangent4);
+    bindingBuffer(_colors.data(), _colors.size(), Common::VertexFormat::Color4);
     bindingBuffer(_texCoords.data(), _texCoords.size(),
-                  Core::VertexFormat::TexCoord2);
+                  Common::VertexFormat::TexCoord2);
 
     //! Create buffers for indices
     glCreateBuffers(1, &_ebo);
