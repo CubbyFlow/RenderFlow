@@ -4,10 +4,10 @@
 #ifndef MATHUTILS_IMPL_HPP
 #define MATHUTILS_IMPL_HPP
 
-#include <Core/Macros.hpp>
+#include <Common/Macros.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-namespace Core
+namespace Common
 {
 namespace Interpolation
 {
@@ -88,6 +88,6 @@ CubbyFlow::Matrix4x4<Type> Perspective(Type radian, Type aspectRatio,
 }
 }  // namespace Transform
 
-};  // namespace Core
+};  // namespace Common
 
 #endif  //! end of MathUtils-Impl.hpp

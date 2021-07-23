@@ -2,7 +2,7 @@
 #define GLTF_SCENE_HPP
 
 #include <tinygltf/tiny_gltf.h>
-#include <Core/Vertex.hpp>
+#include <Common/Vertex.hpp>
 #include <functional>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/mat4x4.hpp>
@@ -27,7 +27,7 @@
 #define KHR_MESH_QUANTIZATION_EXTENSION_NAME "KHR_mesh_quantization"
 #define KHR_TEXTURE_TRANSFORM_EXTENSION_NAME "KHR_texture_transform"
 
-namespace Core
+namespace Common
 {
 namespace GLTFExtension
 {
@@ -310,8 +310,8 @@ class GLTFScene
     std::vector<unsigned char> _u8Buffer;
 };
 
-}  // namespace Core
+}  // namespace Common
 
-#include <Core/GLTFScene-Impl.hpp>
+#include <Common/GLTFScene-Impl.hpp>
 
 #endif

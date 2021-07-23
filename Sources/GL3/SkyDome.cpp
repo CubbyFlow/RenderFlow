@@ -1,6 +1,6 @@
 #include <glad/glad.h>
-#include <Core/AssetLoader.hpp>
-#include <Core/Macros.hpp>
+#include <Common/AssetLoader.hpp>
+#include <Common/Macros.hpp>
 #include <GL3/Shader.hpp>
 #include <GL3/SkyDome.hpp>
 #include <chrono>
@@ -28,7 +28,7 @@ bool SkyDome::Initialize(const std::string& envPath)
     std::cout << "Loading Environment Map : " << envPath << '\n';
     int width, height, channels;
     float* pixels =
-        Core::AssetLoader::LoadImageFile(envPath, &width, &height, &channels);
+        Common::AssetLoader::LoadImageFile(envPath, &width, &height, &channels);
 
     if (pixels == nullptr)
         return false;
@@ -61,7 +61,7 @@ bool SkyDome::Initialize(const std::string& envPath)
         CreateEnvironmentAccelTexture(pixels, glm::vec2(width, height),
                                       _textureSet.accelTexture);
 
-        Core::AssetLoader::FreeImage(pixels);
+        Common::AssetLoader::FreeImage(pixels);
     }
 
     if (_vao == 0)

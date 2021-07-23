@@ -4,7 +4,7 @@
 #include <Core/Matrix/Matrix.hpp>
 #include <functional>
 
-namespace Core
+namespace Common
 {
 template <typename Type>
 using InterpolationMethod = std::function<Type(Type, Type, const float)>;
@@ -54,7 +54,7 @@ template <typename Type>
 CubbyFlow::Matrix4x4<Type> Perspective(Type radian, Type aspectRatio,
                                        Type zNear, Type zFar);
 };  // namespace Transform
-};  // namespace Core
+};  // namespace Common
 
-#include <Core/MathUtils-Impl.hpp>
+#include <Common/MathUtils-Impl.hpp>
 #endif  //! end of MathUtils.hpp

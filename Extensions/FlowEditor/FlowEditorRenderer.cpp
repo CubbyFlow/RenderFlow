@@ -1,6 +1,6 @@
 #include "FlowEditorRenderer.hpp"
 #include "FlowEditorApp.hpp"
-#include <Core/Macros.hpp>
+#include <Common/Macros.hpp>
 #include <glad/glad.h>
 
 FlowEditorRenderer::FlowEditorRenderer()
