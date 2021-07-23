@@ -63,31 +63,6 @@ Type Step(Type prev, Type next, const float keyframe)
 
 }  // namespace Interpolation
 
-namespace Transform
-{
-template <typename Type>
-CubbyFlow::Matrix4x4<Type> LookAt(CubbyFlow::Vector3<Type> origin,
-                                  CubbyFlow::Vector3<Type> direction,
-                                  CubbyFlow::Vector3<Type> up)
-{
-    UNUSED_VARIABLE(origin);
-    UNUSED_VARIABLE(direction);
-    UNUSED_VARIABLE(up);
-    static_assert("Not implemented yet");
-}
-
-template <typename Type>
-CubbyFlow::Matrix4x4<Type> Perspective(Type radian, Type aspectRatio,
-                                       Type zNear, Type zFar)
-{
-    UNUSED_VARIABLE(radian);
-    UNUSED_VARIABLE(aspectRatio);
-    UNUSED_VARIABLE(zNear);
-    UNUSED_VARIABLE(zFar);
-    static_assert("Not implemented yet");
-}
-}  // namespace Transform
-
 };  // namespace Common
 
 #endif  //! end of MathUtils-Impl.hpp
