@@ -5,6 +5,7 @@
 #define MATHUTILS_IMPL_HPP
 
 #include <Common/Macros.hpp>
+#include <Core/Utils/Constants.hpp>
 #include <glm/gtx/quaternion.hpp>
 
 namespace Common
@@ -67,24 +68,37 @@ namespace Transform
 {
 template <typename Type>
 CubbyFlow::Matrix4x4<Type> LookAt(CubbyFlow::Vector3<Type> origin,
-                                  CubbyFlow::Vector3<Type> direction,
+                                  CubbyFlow::Vector3<Type> dir,
                                   CubbyFlow::Vector3<Type> up)
 {
-    UNUSED_VARIABLE(origin);
-    UNUSED_VARIABLE(direction);
-    UNUSED_VARIABLE(up);
-    static_assert("Not implemented yet");
+    const CubbyFlow::Vector3<Type> right = (up.Cross(dir)).Normalized();
+    const CubbyFlow::Vector3<Type> cameraUp = (dir.Cross(right)).Normalized();
+
+    CubbyFlow::Matrix4x4<Type> view = { {right.x,      right.y,    right.z,    0.0},
+                                        {cameraUp.x,   cameraUp.y, cameraUp.z, 0.0},
+                                        {dir.x,        dir.y,      dir.z,      0.0},
+                                        {0.0,          0.0,        0.0,        1.0} };
+
+    CubbyFlow::Matrix4x4<Type> translation = { {1.0, 0.0, 0.0, -origin.x},
+                                               {0.0, 1.0, 0.0, -origin.y},
+                                               {0.0, 0.0, 1.0, -origin.z},
+                                               {0.0, 0.0, 0.0,    1.0   } };
+
+    return view * translation;
 }
 
 template <typename Type>
-CubbyFlow::Matrix4x4<Type> Perspective(Type radian, Type aspectRatio,
+CubbyFlow::Matrix4x4<Type> Perspective(Type fov, Type aspectRatio,
                                        Type zNear, Type zFar)
 {
-    UNUSED_VARIABLE(radian);
-    UNUSED_VARIABLE(aspectRatio);
-    UNUSED_VARIABLE(zNear);
-    UNUSED_VARIABLE(zFar);
-    static_assert("Not implemented yet");
+    CubbyFlow::Matrix4x4<Type> projection(0.0);
+    projection(0, 0) = 1.0 / (std::tan(CubbyFlow::DegreesToRadians(fov) * 0.5) * aspectRatio);
+    projection(1, 1) = 1.0 / (std::tan(CubbyFlow::DegreesToRadians(fov) * 0.5));
+    projection(2, 2) = (zFar + zNear) / (zNear - zFar);
+    projection(2, 3) = (2 * zFar * zNear) / (zNear - zFar);
+    projection(3, 2) = -static_cast<Type>(1.0);
+
+    return projection;
 }
 }  // namespace Transform
 
