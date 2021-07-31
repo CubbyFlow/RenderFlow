@@ -1,46 +1,57 @@
-# Target name
 set(target UnitTests)
+set(ROOT_DIR ${PROJECT_SOURCE_DIR})
+set(PUBLIC_HDR_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+
+# Import doctest package
+find_package(doctest MODULE REQUIRED)
 
 # Includes
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../Includes
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../Libraries/doctest
-    ${CMAKE_CURRENT_SOURCE_DIR}
+set(PUBLIC_HDRS 
 )
 
 # Sources
-file(GLOB_RECURSE sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+set(SRCS
+    ${SRC_DIR}/UnitTests.cpp
+)
 
 # Build executable
-add_executable(${target}
-    ${sources})
+add_executable(${target} ${SRCS})
 
 # Project options
 set_target_properties(${target}
     PROPERTIES
     ${DEFAULT_PROJECT_OPTIONS}
+    PUBLIC_HEADER "${PUBLIC_HDRS}"
+)
+
+#Include directories
+target_include_directories(${target}
+    PUBLIC
+    $<BUILD_INTERFACE:${PUBLIC_HDR_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
+    PRIVATE
+    ${doctest_INCLUDE_DIR}
+    ${ROOT_DIR}/Includes
 )
 
 # Compile options
-# GCC and Clang compiler options
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(DEFAULT_COMPILE_OPTIONS ${DEFAULT_COMPILE_OPTIONS}
-        -Wno-unused-variable
-        )
-endif ()
 target_compile_options(${target}
     PRIVATE
     ${DEFAULT_COMPILE_OPTIONS}
 )
+
+# Compile definitions
 target_compile_definitions(${target}
     PRIVATE
     RESOURCES_DIR="${RESOURCES_DIR}"
+    ${DEFAULT_COMPILE_DEFINITIONS}
 )
 
 # Link libraries
 target_link_libraries(${target}
-    PRIVATE
+    PUBLIC
     ${DEFAULT_LINKER_OPTIONS}
 	${DEFAULT_LIBRARIES}
-    RenderFlow)
+    RenderFlow
+)
