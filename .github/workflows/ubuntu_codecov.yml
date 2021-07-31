@@ -42,8 +42,15 @@ jobs:
           echo "CC=clang-${{ matrix.version }}" >> $GITHUB_ENV
           echo "CXX=clang++-${{ matrix.version }}" >> $GITHUB_ENV
         fi
+    - name: Install Conan Package Manager
+      shell: bash
+      run: |
+        pip3 install conan
     - name: Configure Build
-      run: mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_COVERAGE=ON
+      run: |
+        mkdir build
+        conan install . -if build --build missing -s build_type=Debug
+        cd build && cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_COVERAGE=ON
     - name: Build
       run: cd build && make
     - name: Run Unit Test
