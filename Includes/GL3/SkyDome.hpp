@@ -13,17 +13,16 @@ namespace GL3
 class Texture;
 class Shader;
 
-//!
-//! \brief      Skydome environment map for Image Based Lighting
-//!
-//! This skydome require hdr environment map image input and generates multiple
-//! textures. [hdrTexture] : texture 2d resource contain given hdr envionment
-//! image [accelTexture] : acceleration texture for speed-up generate several
-//! filters and brdf LUT [brdflUT] : brdf lookup table texture which can be
-//! precalculated [irradianceCube] : prefiltered diffuse texture which can be
-//! precalculated [prefilteredCube] : prefiltered glossy texture which can be
-//! precalculated
-//!
+/**
+ * @brief Skydome environment map for Image Based Lighting
+ * 
+ * @details This skydome require hdr environment map image input and generates multiple textures.
+ * [hdrTexture] : texture 2d resource contain given hdr envionment image
+ * [accelTexture] : acceleration texture for speed-up generate several filters and brdf LUT
+ * [brdflUT] : brdf lookup table texture which can be precalculated
+ * [prefilteredCube] : prefiltered glossy texture which can be precalculated
+ * 
+ */
 class SkyDome
 {
  public:
