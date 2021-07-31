@@ -1,7 +1,7 @@
 #ifndef GL_TYPES_HPP
 #define GL_TYPES_HPP
 
-#include "khrplatform.h"
+#include <KHR/khrplatform.h>
 typedef unsigned int GLenum;
 typedef unsigned char GLboolean;
 typedef unsigned int GLbitfield;

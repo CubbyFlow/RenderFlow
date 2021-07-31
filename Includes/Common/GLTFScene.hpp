@@ -1,7 +1,7 @@
 #ifndef GLTF_SCENE_HPP
 #define GLTF_SCENE_HPP
 
-#include <tinygltf/tiny_gltf.h>
+#include <tiny_gltf.h>
 #include <Common/Vertex.hpp>
 #include <functional>
 #include <glm/gtc/quaternion.hpp>
@@ -104,7 +104,7 @@ class GLTFScene
                     ImageCallback imageCallback = nullptr);
     //! Update scene animation
     //! Returns whether scene is modified or not
-    bool UpdateAnimation(int animIndex, float timeElapsed);
+    bool UpdateAnimation(size_t animIndex, double timeElapsed);
 
  protected:
     //! https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#reference-material
@@ -148,7 +148,7 @@ class GLTFScene
         glm::vec3 translation{ 0.0f };
         glm::vec3 scale{ 1.0f };
         glm::quat rotation{ 0.0f, 0.0f, 0.0f, 0.0f };
-        std::vector<unsigned int> primMeshes;
+        std::vector<size_t> primMeshes;
         std::vector<int> childNodes;
         int parentNode{ -1 };
         int nodeIndex{ 0 };
@@ -213,10 +213,10 @@ class GLTFScene
     struct GLTFAnimation
     {
         std::string name;
-        int samplerIndex{ 0 };
-        int samplerCount{ 0 };
-        int channelIndex{ 0 };
-        int channelCount{ 0 };
+        size_t samplerIndex{ 0 };
+        size_t samplerCount{ 0 };
+        size_t channelIndex{ 0 };
+        size_t channelCount{ 0 };
     };
 
     struct SceneDimension
@@ -304,7 +304,7 @@ class GLTFScene
     static void GetTextureID(const tinygltf::Value& value,
                              const std::string& name, int& id);
     //! Temporary storages for processing nodes.
-    std::unordered_map<unsigned int, std::vector<unsigned int>> _meshToPrimMap;
+    std::unordered_map<size_t, std::vector<size_t>> _meshToPrimMap;
     std::vector<unsigned int> _u32Buffer;
     std::vector<unsigned short> _u16Buffer;
     std::vector<unsigned char> _u8Buffer;

@@ -38,7 +38,7 @@ Type SLerp(Type prev, Type next, const float keyframe)
     float theta0 = std::acos(dotProduct);
     float theta = keyframe * theta0;
     float sinTheta = std::sin(theta);
-    float sinTheta0Inv = 1.0 / (std::sin(theta0) + 1e-6);
+    float sinTheta0Inv = 1.0f / (std::sin(theta0) + 1e-6f);
 
     float scalePrevQuat =
         std::cos(theta) - dotProduct * sinTheta * sinTheta0Inv;

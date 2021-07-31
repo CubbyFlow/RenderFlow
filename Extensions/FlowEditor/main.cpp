@@ -1,4 +1,4 @@
-#include <cxxopts/cxxopts.hpp>
+#include <cxxopts.hpp>
 #include <GL3/Window.hpp>
 #include <GLFW/glfw3.h>
 

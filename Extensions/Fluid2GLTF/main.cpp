@@ -1,4 +1,4 @@
-#include <cxxopts/cxxopts.hpp>
+#include <cxxopts.hpp>
 #include <iostream>
 
 int main(int argc, char* argv[])

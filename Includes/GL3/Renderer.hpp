@@ -3,7 +3,7 @@
 
 #include <GL3/DebugUtils.hpp>
 #include <GL3/GLTypes.hpp>
-#include <cxxopts/cxxopts.hpp>
+#include <cxxopts.hpp>
 #include <memory>
 #include <string>
 #include <unordered_map>

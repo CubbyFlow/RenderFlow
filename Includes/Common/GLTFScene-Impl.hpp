@@ -1,7 +1,6 @@
 #ifndef GLTF_SCENE_IMPL_HPP
 #define GLTF_SCENE_IMPL_HPP
 
-#include <tinygltf/tiny_gltf.h>
 #include <iostream>
 #include <string>
 

@@ -1,7 +1,7 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
-#include <cxxopts/cxxopts.hpp>
+#include <cxxopts.hpp>
 #include <memory>
 #include <string>
 #include <unordered_map>

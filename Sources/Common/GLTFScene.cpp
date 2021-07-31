@@ -25,7 +25,7 @@
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #endif
 
-#include <tinygltf/tiny_gltf.h>
+#include <tiny_gltf.h>
 
 #if defined(_MSC_VER)
 #pragma warning(pop)
@@ -87,11 +87,10 @@ bool GLTFScene::Initialize(const std::string& filename, VertexFormat format,
     if (!GLTFExtension::CheckRequiredExtensions(model))
         return false;
 
-    unsigned int numVertices{ 0 }, numIndices{ 0 }, primCount{ 0 },
-        meshCount{ 0 };
+    size_t numVertices{ 0 }, numIndices{ 0 }, primCount{ 0 }, meshCount{ 0 };
     for (const auto& mesh : model.meshes)
     {
-        std::vector<unsigned int> vPrim;
+        std::vector<size_t> vPrim;
         for (const auto& prim : mesh.primitives)
         {
             if (prim.mode != TINYGLTF_MODE_TRIANGLES)
@@ -498,8 +497,8 @@ void GLTFScene::ProcessNode(const tinygltf::Model& model, int nodeIdx,
     if (node.scale.empty() == false)
         newNode.scale = glm::vec3(node.scale[0], node.scale[1], node.scale[2]);
     if (node.rotation.empty() == false)
-        newNode.rotation = glm::quat(node.rotation[3], node.rotation[0],
-                                     node.rotation[1], node.rotation[2]);
+        newNode.rotation = glm::dquat(node.rotation[3], node.rotation[0],
+                                      node.rotation[1], node.rotation[2]);
     if (node.matrix.empty() == false)
     {
         float* nodeMatPtr = glm::value_ptr(newNode.local);
@@ -525,7 +524,7 @@ void GLTFScene::ProcessNode(const tinygltf::Model& model, int nodeIdx,
             auto& attributes = iray_ext.Get("attributes");
             for (size_t idx = 0; idx < attributes.ArrayLen(); ++idx)
             {
-                auto& attrib = attributes.Get(idx);
+                auto& attrib = attributes.Get(static_cast<int>(idx));
                 std::string attName = attrib.Get("name").Get<std::string>();
                 auto& attValue = attrib.Get("value");
                 if (attValue.IsArray())
@@ -593,7 +592,7 @@ void GLTFScene::UpdateNode(int nodeIndex)
         UpdateNode(child);
 }
 
-bool GLTFScene::UpdateAnimation(int animIndex, float timeElapsed)
+bool GLTFScene::UpdateAnimation(size_t animIndex, double timeElapsed)
 {
     //! There is no animation corresponded to given index, therefore return.
     if (_sceneAnims.size() <= animIndex)
@@ -604,16 +603,18 @@ bool GLTFScene::UpdateAnimation(int animIndex, float timeElapsed)
 
     //! Get maximum interval from scene samplers
     //! TODO(snowapril) : this can be precalculated
-    float maxAnimInterval = 0.0f;
-    for (int s = anim.samplerIndex; s < anim.samplerIndex + anim.samplerCount;
-         ++s)
+    double maxAnimInterval = 0.0;
+    for (size_t s = anim.samplerIndex;
+         s < anim.samplerIndex + anim.samplerCount; ++s)
         maxAnimInterval =
-            std::max(maxAnimInterval, _sceneSamplers[s].inputs.back());
+            std::max(maxAnimInterval,
+                     static_cast<double>(_sceneSamplers[s].inputs.back()));
     //! Calculate timeElapsed modulo max interval
-    const float elapsed = std::fmod(timeElapsed, maxAnimInterval);
+    const float elapsed =
+        static_cast<float>(std::fmod(timeElapsed, maxAnimInterval));
 
-    for (int ch = anim.channelIndex; ch < anim.channelCount + anim.channelIndex;
-         ++ch)
+    for (size_t ch = anim.channelIndex;
+         ch < anim.channelCount + anim.channelIndex; ++ch)
     {
         const auto& channel = _sceneChannels[ch];
         const auto& sampler = _sceneSamplers[channel.samplerIndex];
@@ -636,7 +637,7 @@ bool GLTFScene::UpdateAnimation(int animIndex, float timeElapsed)
                                 keyframe);
                             break;
                         case GLTFChannel::Path::Rotation:
-                            node.rotation = glm::normalize(Interpolation::SLerp(
+                            node.rotation = glm::normalize(glm::slerp(
                                 glm::quat(
                                     sampler.outputs[i].w, sampler.outputs[i].x,
                                     sampler.outputs[i].y, sampler.outputs[i].z),
@@ -818,7 +819,7 @@ void GLTFScene::CalculateSceneDimension()
     auto bbMax = glm::vec3(std::numeric_limits<float>::min());
     for (const auto& node : _sceneNodes)
     {
-        for (unsigned int meshIdx : node.primMeshes)
+        for (size_t meshIdx : node.primMeshes)
         {
             const auto& mesh = _scenePrimMeshes[meshIdx];
 
