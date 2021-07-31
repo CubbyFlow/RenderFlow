@@ -7,19 +7,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-#include <tinygltf/stb_image.h>
-
-inline bool HasSmoothingGroup(const tinyobj::shape_t& shape)
-{
-    for (size_t i = 0; i < shape.mesh.smoothing_group_ids.size(); i++)
-    {
-        if (shape.mesh.smoothing_group_ids[i] > 0)
-        {
-            return true;
-        }
-    }
-    return false;
-}
+#include <stb_image.h>
 
 bool CheckTriangle(const glm::vec3 v1, const glm::vec3 v2, const glm::vec3 v3)
 {
@@ -35,63 +23,6 @@ glm::vec3 CalculateNormal(const glm::vec3 v1, const glm::vec3 v2,
     glm::vec3 edge1 = v2 - v1;
     glm::vec3 edge2 = v3 - v2;
     return glm::normalize(glm::cross(edge1, edge2));
-}
-
-void ComputeSmoothingNormals(const tinyobj::attrib_t& attrib,
-                             const tinyobj::shape_t& shape,
-                             std::map<int, glm::vec3>& smoothVertexNormals)
-{
-    smoothVertexNormals.clear();
-    const auto& vertices = attrib.vertices;
-
-    for (size_t faceIndex = 0; faceIndex < shape.mesh.indices.size() / 3;
-         faceIndex++)
-    {
-        // Get the three indexes of the face (all faces are triangular)
-        tinyobj::index_t idx0 = shape.mesh.indices[3 * faceIndex + 0];
-        tinyobj::index_t idx1 = shape.mesh.indices[3 * faceIndex + 1];
-        tinyobj::index_t idx2 = shape.mesh.indices[3 * faceIndex + 2];
-
-        // Get the three vertex indexes and coordinates
-        glm::vec3 position[3];  // coordinates
-
-        int f0 = idx0.vertex_index;
-        int f1 = idx1.vertex_index;
-        int f2 = idx2.vertex_index;
-        assert(f0 >= 0 && f1 >= 0 && f2 >= 0);
-
-        position[0] = glm::vec3(vertices[3 * f0], vertices[3 * f0 + 1],
-                                vertices[3 * f0 + 2]);
-        position[1] = glm::vec3(vertices[3 * f1], vertices[3 * f1 + 1],
-                                vertices[3 * f1 + 2]);
-        position[2] = glm::vec3(vertices[3 * f2], vertices[3 * f2 + 1],
-                                vertices[3 * f2 + 2]);
-
-        // Compute the normal of the face
-        glm::vec3 normal =
-            CalculateNormal(position[0], position[1], position[2]);
-
-        // Add the normal to the three vertexes
-        int faces[3] = { f0, f1, f2 };
-        for (size_t i = 0; i < 3; ++i)
-        {
-            auto iter = smoothVertexNormals.find(faces[i]);
-            if (iter == smoothVertexNormals.end())
-            {
-                smoothVertexNormals[faces[i]] = normal;
-            }
-            else
-            {
-                iter->second += normal;
-            }
-        }
-    }  // f
-
-    // Normalize the normals, that is, make them unit vectors
-    for (auto& p : smoothVertexNormals)
-    {
-        p.second = glm::normalize(p.second);
-    }
 }
 
 struct PackedVertex
@@ -136,12 +67,11 @@ bool AssetLoader::LoadObjFile(const std::string& path,
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
-    std::string warn;
     std::string err;
 
     //! Load obj file with tinyobjloader
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err,
-                                path.c_str());
+    bool ret =
+        tinyobj::LoadObj(&attrib, &shapes, &materials, &err, path.c_str());
     if (!ret)
     {
         std::cerr << "[AssetLoader:LoadObjFile] Failed to load " << path
@@ -159,12 +89,6 @@ bool AssetLoader::LoadObjFile(const std::string& path,
 
     for (auto& shape : shapes)
     {
-        std::map<int, glm::vec3> smoothVertexNormals;
-        if (HasSmoothingGroup(shape))
-        {
-            ComputeSmoothingNormals(attrib, shape, smoothVertexNormals);
-        }
-
         std::map<PackedVertex, unsigned int> packedVerticesMap;
         for (size_t faceIndex = 0; faceIndex < shape.mesh.indices.size() / 3;
              ++faceIndex)
@@ -218,7 +142,7 @@ bool AssetLoader::LoadObjFile(const std::string& path,
                     }
                     else
                     {
-                        for (size_t k = 0; k < 3; k++)
+                        for (unsigned int k = 0; k < 3; k++)
                         {
                             assert(size_t(3 * f0 + k) < attrib.normals.size());
                             assert(size_t(3 * f1 + k) < attrib.normals.size());
@@ -235,26 +159,10 @@ bool AssetLoader::LoadObjFile(const std::string& path,
                 }
                 if (invalidNormal)
                 {
-                    if (!smoothVertexNormals.empty())
-                    {
-                        //! Use smoothing normals
-                        int f0 = idx0.vertex_index;
-                        int f1 = idx1.vertex_index;
-                        int f2 = idx2.vertex_index;
-                        if (f0 >= 0 && f1 >= 0 && f2 >= 0)
-                        {
-                            normal[0] = smoothVertexNormals[f0];
-                            normal[1] = smoothVertexNormals[f1];
-                            normal[2] = smoothVertexNormals[f2];
-                        }
-                    }
-                    else
-                    {
-                        normal[0] = CalculateNormal(position[0], position[1],
-                                                    position[2]);
-                        normal[1] = normal[0];
-                        normal[2] = normal[0];
-                    }
+                    normal[0] =
+                        CalculateNormal(position[0], position[1], position[2]);
+                    normal[1] = normal[0];
+                    normal[2] = normal[0];
                 }
             }
 
@@ -312,7 +220,8 @@ bool AssetLoader::LoadObjFile(const std::string& path,
                         vertices.insert(
                             vertices.end(),
                             { position[k].x, position[k].y, position[k].z });
-                    if (static_cast<int>(format & Common::VertexFormat::Normal3))
+                    if (static_cast<int>(format &
+                                         Common::VertexFormat::Normal3))
                         vertices.insert(
                             vertices.end(),
                             { normal[k].x, normal[k].y, normal[k].z });
