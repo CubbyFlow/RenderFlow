@@ -63,6 +63,20 @@ set(CMAKE_MACOSX_RPATH ON)
 # Set resource directory
 set(RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Resources/")
 
+# Get conan build script
+find_file(CONAN_SCRIPT
+	NAMES conanbuildinfo.txt
+	PATHS ${CMAKE_BINARY_DIR}
+		  ${PROJECT_SOURCE_DIR}/build
+)
+
+# If find conanbuildinfo.txt, append its directory to CMAKE_MODULE_PATH
+if (CONAN_SCRIPT)
+	message(STATUS "Find Conan script directory")
+	get_filename_component(CONAN_SCRIPT_DIR ${CONAN_SCRIPT} DIRECTORY)
+	list(APPEND CMAKE_MODULE_PATH ${CONAN_SCRIPT_DIR})
+endif()
+
 # Project modules
 add_subdirectory(Libraries/glad)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
