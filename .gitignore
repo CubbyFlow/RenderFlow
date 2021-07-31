@@ -1,6 +1,6 @@
 
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudio,c++,cmake
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,c++,cmake
+# Created by https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,c++,cmake
+# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,visualstudiocode,c++,cmake
 
 ### C++ ###
 # Prerequisites
@@ -412,4 +412,16 @@ MigrationBackup/
 
 build/
 
-# End of https://www.toptal.com/developers/gitignore/api/visualstudio,c++,cmake
+### VisualStudioCode ###
+.vscode/*
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+.ionide
+
+# End of https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,c++,cmake
