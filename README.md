@@ -24,6 +24,7 @@ After install header & library of the CubbyFlow, Now you can configure RenderFlo
 git clone https://github.com/CubbyFlow/RenderFlow.git --recursive
 cd RenderFlow
 mkdir build
+conan install . -if build --build missing -s build_type=Debug
 cd build
 cmake .. -DCUBBYFLOW_INSTALL_DIR=${DIR_YOU_INSTALLED} && make
 ```
