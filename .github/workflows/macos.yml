@@ -24,16 +24,31 @@ jobs:
     name: ${{matrix.name}}
 
     steps:
-    - uses: actions/checkout@v1
-      with:
-        submodules: true
     - name: Configure Compiler
       run: |
         ls -ls /Applications/
         sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
         echo "CC=clang" >> $GITHUB_ENV
         echo "CXX=clang++" >> $GITHUB_ENV
-    - name: Configure Build
-      run: mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release
-    - name: Build
+
+    - uses: actions/checkout@v1
+      with:
+        repository: cubbyflow/cubbyflow
+        submodules: true
+        ref: main
+    - name: Configure CubbyFlow Install
+      run: mkdir build ${GITHUB_ACTION_PATH}/install && 
+          cd build && 
+          cmake .. -DUSE_CUDA=False -DCMAKE_INSTALL_PREFIX=${GITHUB_ACTION_PATH}/install -DCMAKE_BUILD_TYPE=Release
+    - name: Install CubbyFlow
+      run: cd build && cmake --build . --target install --config=Release
+
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+    - name: Configure RenderFlow Build
+      run: mkdir build && cd build && cmake .. -DCUBBYFLOW_INSTALL_DIR=${GITHUB_ACTION_PATH}/install -DCMAKE_BUILD_TYPE=Release
+    - name: Build RenderFlow
       run: cd build && make
+    - name: Run Unit Test
+      run: /Users/runner/work/RenderFlow/RenderFlow/build/bin/UnitTests

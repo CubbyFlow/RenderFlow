@@ -32,9 +32,6 @@ jobs:
     name: ${{matrix.name}}
 
     steps:
-    - uses: actions/checkout@v1
-      with:
-        submodules: true
     - name: Configure Compiler
       run: |
         if [ "${{ matrix.compiler }}" = "gcc" ]; then
@@ -54,7 +51,27 @@ jobs:
         else
           sudo apt-get install cmake clang-${{ matrix.version }} clang++-${{ matrix.version }}
         fi
-    - name: Configure Build
-      run: mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release
-    - name: Build
+
+    - uses: actions/checkout@v1
+      with:
+        repository: cubbyflow/cubbyflow
+        submodules: true
+        ref: main
+    - name: Configure CubbyFlow Install
+      run: mkdir build ${GITHUB_WORKSPACE}/install && 
+          cd build && export CUBBYFLOW_INSTALL_DIR=${GITHUB_WORKSPACE}/install &&
+          cmake .. -DUSE_CUDA=False -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install -DCMAKE_BUILD_TYPE=Release
+      working-directory: ../cubbyflow
+    - name: Install CubbyFlow
+      run: cd build && cmake --build . --target install --config=Release
+      working-directory: ../cubbyflow
+
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+    - name: Configure RenderFlow Build
+      run: mkdir build && cd build && cmake .. -DCUBBYFLOW_INSTALL_DIR=${CUBBYFLOW_INSTALL_DIR} -DCMAKE_BUILD_TYPE=Release
+    - name: Build RenderFlow
       run: cd build && make
+    - name: Run Unit Test
+      run: /home/runner/work/RenderFlow/RenderFlow/build/bin/UnitTests

@@ -20,10 +20,24 @@ jobs:
     steps:
     - uses: actions/checkout@v1
       with:
+        repository: cubbyflow/cubbyflow
         submodules: true
-    - name: Configure Build
-      run: mkdir build && cd build && cmake .. -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_BUILD_TYPE=Release
+        ref: main
+    - name: Configure CubbyFlow Install
+      run: mkdir build ${GITHUB_ACTION_PATH}/install && 
+          cd build && 
+          cmake .. -DCMAKE_GENERATOR_PLATFORM=x64 -DUSE_CUDA=False -DCMAKE_INSTALL_PREFIX=${GITHUB_ACTION_PATH}/install -DCMAKE_BUILD_TYPE=Release
+    - name: Install CubbyFlow
+      run: cd build && cmake --build . --target install --config=Release
+
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+    - name: Configure RenderFlow Build
+      run: mkdir build && cd build && cmake .. -DCMAKE_GENERATOR_PLATFORM=x64 -DCUBBYFLOW_INSTALL_DIR=${GITHUB_ACTION_PATH}/install -DCMAKE_BUILD_TYPE=Release
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
-    - name: Build
+    - name: Build RenderFlow
       run: cd build && MSBuild.exe RenderFlow.sln /p:Configuration=Release
+    - name: Run Unit Test
+      run: /a/RenderFlow/RenderFlow/build/bin/Release/UnitTests.exe
