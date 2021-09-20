@@ -22,7 +22,7 @@ jobs:
       with:
         submodules: true
     - name: Configure Build
-      run: mkdir build && cd build && cmake .. -DCMAKE_GENERATOR_PLATFORM=x64 -DCMAKE_BUILD_TYPE=Release
+      run: mkdir build && cd build && cmake .. -DCMAKE_GENERATOR_PLATFORM=x64 -DCUBBYFLOW_INSTALL_DIR=${GITHUB_WORKSPACE}/Libraries/cubbyflow -DCMAKE_BUILD_TYPE=Release
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
     - name: Build

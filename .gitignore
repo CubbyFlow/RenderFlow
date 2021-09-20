@@ -35,6 +35,9 @@
 *.la
 *.a
 *.lib
+# Add exception for cubbyflow dependency
+!Libraries/cubbyflow/lib/*.lib
+!Libraries/cubbyflow/lib/*.a
 
 # Executables
 *.exe

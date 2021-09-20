@@ -58,22 +58,23 @@ target_compile_definitions(${target}
 if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     target_link_libraries(${target}
         PRIVATE
-    
         PUBLIC
         ${DEFAULT_LINKER_OPTIONS}
     	${DEFAULT_LIBRARIES}
+        ${CUBBYFLOW_LIBRARY}
         glad
         glfw
         draco
+        tinyobjloader
         INTERFACE
     )
 else()
     target_link_libraries(${target}
         PRIVATE
-    
         PUBLIC
         ${DEFAULT_LINKER_OPTIONS}
     	${DEFAULT_LIBRARIES}
+        ${CUBBYFLOW_LIBRARY}
         glad
         glfw
         draco_static

@@ -1,8 +1,8 @@
 #ifndef SCENE_HPP
 #define SCENE_HPP
 
-#include <Core/GLTFScene.hpp>
-#include <Core/Vertex.hpp>
+#include <Common/GLTFScene.hpp>
+#include <Common/Vertex.hpp>
 #include <GL3/DebugUtils.hpp>
 #include <GL3/GLTypes.hpp>
 #include <glm/mat4x4.hpp>
@@ -17,7 +17,7 @@ class Shader;
 //!
 //! \brief      GLTF Scene rendering class
 //!
-class Scene : public Core::GLTFScene
+class Scene : public Common::GLTFScene
 {
  public:
     //! Scene node matrix type definition with pair of glm::mat4.
@@ -27,7 +27,7 @@ class Scene : public Core::GLTFScene
     //! Default destructor
     ~Scene();
     //! Load GLTFScene from the given scene filename and generate buffers
-    bool Initialize(const std::string& filename, Core::VertexFormat format);
+    bool Initialize(const std::string& filename, Common::VertexFormat format);
     //! Update the scene for animating
     void Update(double dt);
     //! Render the whole nodes of the parsed gltf-scene

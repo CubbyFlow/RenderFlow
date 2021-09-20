@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.8.2 FATAL_ERROR)
 
 # Include cmake modules
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Builds/CMake")
 
 # Declare project
 project(RenderFlow)
@@ -16,11 +16,18 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 # Set enable output of compile commands during generation
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Find CubbyFlow package in local
+find_package(CubbyFlow REQUIRED)
+if (NOT CUBBYFLOW_FOUND)
+  message(FATAL_ERROR "CubbyFlow is not found.")
+endif()
+
 # Includes
 include_directories(Includes)
 include_directories(Resources)
 include_directories(Libraries)
 include_directories(Libraries/glad)
+include_directories(${CubbyFlow_INCLUDE_DIR})
 include_directories(Libraries/glm)
 include_directories(Libraries/imgui)
 include_directories(Libraries/tinygltf)
@@ -47,11 +54,14 @@ set(RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Resources/")
 
 # Project modules
 add_subdirectory(Libraries/glad)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 add_subdirectory(Libraries/glfw)
 add_subdirectory(Libraries/imgui)
-add_subdirectory(Libraries/tinyobjloader)
-
 add_subdirectory(Libraries/draco)
 file(COPY "${CMAKE_BINARY_DIR}/draco/draco_features.h" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/draco/src/draco/")
+add_subdirectory(Libraries/tinyobjloader)
 
 add_subdirectory(Sources)
+add_subdirectory(Tests/UnitTests)
+add_subdirectory(Extensions/Fluid2GLTF)
+add_subdirectory(Extensions/FlowEditor)

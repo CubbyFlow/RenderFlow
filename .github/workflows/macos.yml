@@ -34,6 +34,6 @@ jobs:
         echo "CC=clang" >> $GITHUB_ENV
         echo "CXX=clang++" >> $GITHUB_ENV
     - name: Configure Build
-      run: mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release
+      run: mkdir build && cd build && cmake .. -DCUBBYFLOW_INSTALL_DIR=${GITHUB_WORKSPACE}/Libraries/cubbyflow -DCMAKE_BUILD_TYPE=Release
     - name: Build
       run: cd build && make
