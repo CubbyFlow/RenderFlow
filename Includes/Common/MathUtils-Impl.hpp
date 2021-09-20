@@ -5,7 +5,6 @@
 #define MATHUTILS_IMPL_HPP
 
 #include <Common/Macros.hpp>
-#include <Core/Utils/Constants.hpp>
 #include <glm/gtx/quaternion.hpp>
 
 namespace Common
@@ -39,7 +38,7 @@ Type SLerp(Type prev, Type next, const float keyframe)
     float theta0 = std::acos(dotProduct);
     float theta = keyframe * theta0;
     float sinTheta = std::sin(theta);
-    float sinTheta0Inv = 1.0 / (std::sin(theta0) + 1e-6);
+    float sinTheta0Inv = 1.0f / (std::sin(theta0) + 1e-6f);
 
     float scalePrevQuat =
         std::cos(theta) - dotProduct * sinTheta * sinTheta0Inv;
@@ -63,44 +62,6 @@ Type Step(Type prev, Type next, const float keyframe)
 }
 
 }  // namespace Interpolation
-
-namespace Transform
-{
-template <typename Type>
-CubbyFlow::Matrix4x4<Type> LookAt(CubbyFlow::Vector3<Type> origin,
-                                  CubbyFlow::Vector3<Type> dir,
-                                  CubbyFlow::Vector3<Type> up)
-{
-    const CubbyFlow::Vector3<Type> right = (up.Cross(dir)).Normalized();
-    const CubbyFlow::Vector3<Type> cameraUp = (dir.Cross(right)).Normalized();
-
-    CubbyFlow::Matrix4x4<Type> view = { {right.x,      right.y,    right.z,    0.0},
-                                        {cameraUp.x,   cameraUp.y, cameraUp.z, 0.0},
-                                        {dir.x,        dir.y,      dir.z,      0.0},
-                                        {0.0,          0.0,        0.0,        1.0} };
-
-    CubbyFlow::Matrix4x4<Type> translation = { {1.0, 0.0, 0.0, -origin.x},
-                                               {0.0, 1.0, 0.0, -origin.y},
-                                               {0.0, 0.0, 1.0, -origin.z},
-                                               {0.0, 0.0, 0.0,    1.0   } };
-
-    return view * translation;
-}
-
-template <typename Type>
-CubbyFlow::Matrix4x4<Type> Perspective(Type fov, Type aspectRatio,
-                                       Type zNear, Type zFar)
-{
-    CubbyFlow::Matrix4x4<Type> projection(0.0);
-    projection(0, 0) = 1.0 / (std::tan(CubbyFlow::DegreesToRadians(fov) * 0.5) * aspectRatio);
-    projection(1, 1) = 1.0 / (std::tan(CubbyFlow::DegreesToRadians(fov) * 0.5));
-    projection(2, 2) = (zFar + zNear) / (zNear - zFar);
-    projection(2, 3) = (2 * zFar * zNear) / (zNear - zFar);
-    projection(3, 2) = -static_cast<Type>(1.0);
-
-    return projection;
-}
-}  // namespace Transform
 
 };  // namespace Common
 

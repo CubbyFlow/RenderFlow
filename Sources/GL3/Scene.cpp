@@ -7,7 +7,7 @@
 #include <chrono>
 
 using namespace glm;
-#include <shaders/gltf.glsl>
+#include <gltf.glsl>
 
 namespace GL3
 {
@@ -70,16 +70,16 @@ bool Scene::Initialize(const std::string& filename, Common::VertexFormat format)
     //! Create & Bind vertex array object
     glCreateVertexArrays(1, &_vao);
     _debug.SetObjectName(GL_VERTEX_ARRAY, _vao, "Scene Vertex Array Object");
-    glCreateBuffers(_buffers.size(), _buffers.data());
+    glCreateBuffers(static_cast<GLsizei>(_buffers.size()), _buffers.data());
 
     //! Temporary buffer binding lambda function
     auto bindingBuffer = [&](void* data, size_t num,
                              Common::VertexFormat attribute) {
         if (static_cast<int>(format & attribute))
         {
-            const size_t numFloats =
-                Common::VertexHelper::GetNumberOfFloats(attribute);
-            const size_t stride = numFloats * sizeof(float);
+            const GLsizei numFloats = static_cast<GLsizei>(
+                Common::VertexHelper::GetNumberOfFloats(attribute));
+            const GLsizei stride = numFloats * sizeof(float);
             glNamedBufferStorage(_buffers[index], num * stride, data,
                                  GL_MAP_READ_BIT);
             glVertexArrayVertexBuffer(_vao, index, _buffers[index], 0, stride);
@@ -201,7 +201,7 @@ void Scene::Render(const std::shared_ptr<Shader>& shader,
     {
         shader->SendUniformVariable("instanceIdx", instanceIdx);
 
-        for (unsigned int meshIdx : node.primMeshes)
+        for (size_t meshIdx : node.primMeshes)
         {
             auto& primMesh = _scenePrimMeshes[meshIdx];
             if (primMesh.materialIndex != lastMaterialIdx)
@@ -257,10 +257,10 @@ void Scene::UpdateMatrixBuffer()
 
 void Scene::CleanUp()
 {
-    glDeleteTextures(_textures.size(), _textures.data());
+    glDeleteTextures(static_cast<GLsizei>(_textures.size()), _textures.data());
     glDeleteBuffers(1, &_matrixBuffer);
     glDeleteBuffers(1, &_materialBuffer);
-    glDeleteBuffers(_buffers.size(), _buffers.data());
+    glDeleteBuffers(static_cast<GLsizei>(_buffers.size()), _buffers.data());
     glDeleteBuffers(1, &_ebo);
     glDeleteVertexArrays(1, &_vao);
 }

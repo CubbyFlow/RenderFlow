@@ -44,6 +44,9 @@ The following cache variables may also be set:
 set(CUBBYFLOW_ROOT "${CUBBYFLOW_INSTALL_DIR}" CACHE PATH "CubbyFlow installed directory")
 set(CubbyFlow_INCLUDE_DIR "${CUBBYFLOW_ROOT}/include" CACHE PATH "CubbyFlow include directory")
 
+message(STATUS "CUBBYFLOW_ROOT : ${CUBBYFLOW_ROOT}")
+message(STATUS "CubbyFlow_INCLUDE_DIR : ${CubbyFlow_INCLUDE_DIR}")
+
 find_library(CubbyFlow_LIBRARY_DEBUG
   NAMES CubbyFlow
   PATHS ${CUBBYFLOW_ROOT}/lib
@@ -52,6 +55,9 @@ find_library(CubbyFlow_LIBRARY_RELEASE
   NAMES CubbyFlow
   PATHS ${CUBBYFLOW_ROOT}/lib
 )
+
+message(STATUS "CubbyFlow_LIBRARY_DEBUG : ${CubbyFlow_LIBRARY_DEBUG}")
+message(STATUS "CubbyFlow_LIBRARY_RELEASE : ${CubbyFlow_LIBRARY_RELEASE}")
 
 include(SelectLibraryConfigurations)
 select_library_configurations(CubbyFlow)

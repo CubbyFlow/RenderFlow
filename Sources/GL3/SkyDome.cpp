@@ -58,7 +58,7 @@ bool SkyDome::Initialize(const std::string& envPath)
         glTextureParameteri(_textureSet.accelTexture, GL_TEXTURE_MAG_FILTER,
                             GL_LINEAR);
 
-        CreateEnvironmentAccelTexture(pixels, glm::vec2(width, height),
+        CreateEnvironmentAccelTexture(pixels, glm::uvec2(width, height),
                                       _textureSet.accelTexture);
 
         Common::AssetLoader::FreeImage(pixels);
@@ -181,8 +181,7 @@ void SkyDome::RenderToCube(GLuint fbo, GLuint texture, Shader* shader,
     {
         for (unsigned int f = 0; f < 6; ++f)
         {
-            glm::vec2 viewport =
-                glm::vec2(dim) * static_cast<float>(std::pow(0.5f, mip));
+            glm::ivec2 viewport(static_cast<int>(dim * static_cast<float>(std::pow(0.5f, mip))));
             glViewport(0, 0, viewport.x, viewport.y);
 
             //! Update shader uniform variable
@@ -402,7 +401,7 @@ float BuildAliasMap(const std::vector<float>& data,
 }
 }  // namespace
 
-void SkyDome::CreateEnvironmentAccelTexture(const float* pixels, glm::vec2 size,
+void SkyDome::CreateEnvironmentAccelTexture(const float* pixels, glm::uvec2 size,
                                             GLuint accelTexture)
 {
     const unsigned int rx = size.x;

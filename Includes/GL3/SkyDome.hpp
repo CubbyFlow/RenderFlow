@@ -54,7 +54,7 @@ class SkyDome
     void CreateCube();
     void RenderToCube(GLuint fbo, GLuint texture, Shader* shader,
                       unsigned int dim, const unsigned int numMips);
-    void CreateEnvironmentAccelTexture(const float* pixels, glm::vec2 size,
+    void CreateEnvironmentAccelTexture(const float* pixels, glm::uvec2 size,
                                        GLuint accelTexture);
     void IntegrateBRDF(unsigned int dim);
     void PrefilterDiffuse(unsigned int dim);

@@ -1,3 +1,0 @@
-[submodule "Libraries/draco"]
-	path = Libraries/draco
-	url = https://github.com/google/draco

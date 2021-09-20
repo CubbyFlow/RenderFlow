@@ -1,69 +1,55 @@
 # Target name
 set(target Fluid2GLTF)
+set(ROOT_DIR ${PROJECT_SOURCE_DIR})
+set(PUBLIC_HDR_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Includes
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+set(PUBLIC_HDRS 
+    ""
+)
 
 # Sources
-file(GLOB header_dir ${root_dir}/Includes)
-
-file(GLOB_RECURSE headers
-    ${header_dir}/*.hpp
+set(SRCS
+    ${SRC_DIR}/main.cpp
 )
-
-file(GLOB_RECURSE sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
-)
-
-# MSVC compiler options
-if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-	set(DEFAULT_COMPILE_OPTIONS ${DEFAULT_COMPILE_OPTIONS}
-		/wd4201 # ignore warning in "glm nonstandard extension used : nameless struct/union"
-	)
-endif ()
 
 # Build executable
-add_executable(${target}
-    ${sources})
+add_executable(${target} ${SRCS})
 
 # Project options
 set_target_properties(${target}
     PROPERTIES
     ${DEFAULT_PROJECT_OPTIONS}
+    PUBLIC_HEADER "${PUBLIC_HDRS}"
+)
+
+#Include directories
+target_include_directories(${target}
+    PUBLIC
+    $<BUILD_INTERFACE:${PUBLIC_HDR_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
+    PRIVATE
+    ${ROOT_DIR}/Includes
 )
 
 # Compile options
 target_compile_options(${target}
     PRIVATE
-
-    PUBLIC
     ${DEFAULT_COMPILE_OPTIONS}
-
-    INTERFACE
 )
 
 # Compile definitions
 target_compile_definitions(${target}
     PRIVATE
     RESOURCES_DIR="${RESOURCES_DIR}"
+    ${DEFAULT_COMPILE_DEFINITIONS}
 )
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    target_link_libraries(${target}
-        PRIVATE
-        PUBLIC
-        ${DEFAULT_LINKER_OPTIONS}
-    	${DEFAULT_LIBRARIES}
-        draco
-        INTERFACE
-    )
-else()
-    target_link_libraries(${target}
-        PRIVATE
-        PUBLIC
-        ${DEFAULT_LINKER_OPTIONS}
-    	${DEFAULT_LIBRARIES}
-        draco_static
-        INTERFACE
-    )
-endif()
+# Link libraries
+target_link_libraries(${target}
+    PUBLIC
+    ${DEFAULT_LINKER_OPTIONS}
+	${DEFAULT_LIBRARIES}
+    RenderFlow
+)

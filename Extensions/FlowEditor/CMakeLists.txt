@@ -1,50 +1,58 @@
 # Target name
 set(target FlowEditor)
+set(ROOT_DIR ${PROJECT_SOURCE_DIR})
+set(PUBLIC_HDR_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Includes
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+set(PUBLIC_HDRS 
+    ${PUBLIC_HDR_DIR}/FlowEditorApp.hpp
+    ${PUBLIC_HDR_DIR}/FlowEditorRenderer.hpp
+)
 
 # Sources
-file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
-
-# MSVC compiler options
-if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-	set(DEFAULT_COMPILE_OPTIONS ${DEFAULT_COMPILE_OPTIONS}
-		/wd4201 # ignore warning in "glm nonstandard extension used : nameless struct/union"
-	)
-endif ()
+set(SRCS
+    ${SRC_DIR}/FlowEditorApp.cpp
+    ${SRC_DIR}/FlowEditorRenderer.cpp
+    ${SRC_DIR}/main.cpp
+)
 
 # Build executable
-add_executable(${target}
-    ${sources})
+add_executable(${target} ${SRCS})
 
 # Project options
 set_target_properties(${target}
     PROPERTIES
     ${DEFAULT_PROJECT_OPTIONS}
+    PUBLIC_HEADER "${PUBLIC_HDRS}"
+)
+
+#Include directories
+target_include_directories(${target}
+    PUBLIC
+    $<BUILD_INTERFACE:${PUBLIC_HDR_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
+    PRIVATE
+    ${ROOT_DIR}/Includes
 )
 
 # Compile options
 target_compile_options(${target}
     PRIVATE
-
-    PUBLIC
     ${DEFAULT_COMPILE_OPTIONS}
-
-    INTERFACE
 )
 
 # Compile definitions
 target_compile_definitions(${target}
     PRIVATE
     RESOURCES_DIR="${RESOURCES_DIR}"
+    ${DEFAULT_COMPILE_DEFINITIONS}
 )
 
+# Link libraries
 target_link_libraries(${target}
-    PRIVATE
     PUBLIC
     ${DEFAULT_LINKER_OPTIONS}
-    ${DEFAULT_LIBRARIES}
+	${DEFAULT_LIBRARIES}
     RenderFlow
-    INTERFACE
 )

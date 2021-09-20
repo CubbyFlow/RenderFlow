@@ -1,32 +1,44 @@
 # RenderFlow
 
-[![CodeFactor](https://www.codefactor.io/repository/github/snowapril/RenderFlow/badge)](https://www.codefactor.io/repository/github/snowapril/RenderFlow)
+[![CodeFactor](https://www.codefactor.io/repository/github/cubbyflow/renderflow/badge)](https://www.codefactor.io/repository/github/cubbyflow/renderflow)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/82c7218998df4b4eb236ad21ae96c1fe)](https://www.codacy.com/gh/Snowapril/RenderFlow/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Snowapril/RenderFlow&amp;utm_campaign=Badge_Grade)
 ![Ubuntu github action](https://github.com/CubbyFlow/RenderFlow/actions/workflows/ubuntu.yml/badge.svg?branch=main)
 ![Window github action](https://github.com/CubbyFlow/RenderFlow/actions/workflows/window.yml/badge.svg?branch=main)
 ![MacOS github action](https://github.com/CubbyFlow/RenderFlow/actions/workflows/macos.yml/badge.svg?branch=main)
+[![codecov](https://codecov.io/gh/CubbyFlow/RenderFlow/branch/main/graph/badge.svg?token=DEXQCY7L76)](https://codecov.io/gh/CubbyFlow/RenderFlow)
 
 RenderFlow is fluid visualization project for [CubbyFlow](https://github.com/utilforever/cubbyflow). 
 
 ## QuickStart
+RenderFlow need CubbyFlow dependency. You need to install CubbyFlow before configuration
+```bash
+git clone https://github.com/CubbyFlow/CubbyFlow.git --recursive
+mkdir CubbyFlow/build CubbyFlow/install
+cd CubbyFlow/build
+cmake .. -DCMAKE_INSTALL_PREFIX=../install
+cmake --build . --target install
+```
+
+After install header & library of the CubbyFlow, Now you can configure RenderFlow.
 ```bash
 git clone https://github.com/CubbyFlow/RenderFlow.git --recursive
 cd RenderFlow
 mkdir build
+conan install . -if build --build missing -s build_type=Debug
 cd build
-cmake .. && make
+cmake .. -DCUBBYFLOW_INSTALL_DIR=${DIR_YOU_INSTALLED} && make
 ```
 
 ## dependency
-*   cxxopts
-*   glad
-*   glfw
-*   glm
-*   imgui
-*   stb_image
-*   tinyobjloader
-*   tinygltf
-*   draco
+*   [CubbyFlow](https://github.com/CubbyFlow/CubbyFlow)
+*   [cxxopts](https://github.com/jarro2783/cxxopts)
+*   [glad](https://github.com/Dav1dde/glad)
+*   [glfw](https://github.com/glfw/glfw)
+*   [imgui](https://github.com/ocornut/imgui)
+*   [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
+*   [tinygltf](https://github.com/syoyo/tinygltf)
+*   [draco](https://github.com/google/draco)
+*   [doctest](https://github.com/onqtam/doctest)
 
 ## How To Contribute
 

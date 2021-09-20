@@ -1,6 +1,6 @@
 name: macOS
 
-on:  
+on:
   push:
     branches: [ main ]
   pull_request:
@@ -33,7 +33,16 @@ jobs:
         sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
         echo "CC=clang" >> $GITHUB_ENV
         echo "CXX=clang++" >> $GITHUB_ENV
+    - name: Install Conan Package Manager
+      shell: bash
+      run: |
+        brew install conan
     - name: Configure Build
-      run: mkdir build && cd build && cmake .. -DCUBBYFLOW_INSTALL_DIR=${GITHUB_WORKSPACE}/Libraries/cubbyflow -DCMAKE_BUILD_TYPE=Release
+      run: |
+        mkdir build
+        conan install . -if build --build missing -s build_type=Release
+        cd build && cmake .. -DCUBBYFLOW_INSTALL_DIR=${GITHUB_WORKSPACE}/Libraries/cubbyflow -DCMAKE_BUILD_TYPE=Release
     - name: Build
       run: cd build && make
+    - name: Run Unit Test
+      run: /Users/runner/work/RenderFlow/RenderFlow/build/bin/UnitTests
