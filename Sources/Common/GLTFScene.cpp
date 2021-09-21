@@ -38,7 +38,7 @@ namespace Common
 bool GLTFExtension::CheckRequiredExtensions(const tinygltf::Model& model)
 {
     static std::unordered_set<std::string> kSupportedExtensions{
-        KHR_DARCO_MESH_EXTENSION_NAME,
+        KHR_DRACO_MESH_EXTENSION_NAME,
         KHR_LIGHTS_PUNCTUAL_EXTENSION_NAME,
         KHR_MATERIALS_CLEARCOAT_EXTENSION_NAME,
         KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS_EXTENSION_NAME,

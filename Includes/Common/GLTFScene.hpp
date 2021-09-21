@@ -15,7 +15,7 @@
 
 //! KHR extension list
 //! (https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos)
-#define KHR_DARCO_MESH_EXTENSION_NAME "KHR_draco_mesh_compression"
+#define KHR_DRACO_MESH_EXTENSION_NAME "KHR_draco_mesh_compression"
 #define KHR_LIGHTS_PUNCTUAL_EXTENSION_NAME "KHR_lights_punctual"
 #define KHR_MATERIALS_CLEARCOAT_EXTENSION_NAME "KHR_materials_clearcoat"
 #define KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS_EXTENSION_NAME \
