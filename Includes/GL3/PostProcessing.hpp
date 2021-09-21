@@ -10,30 +10,53 @@ namespace GL3
 {
 class Shader;
 
-//!
-//! \brief      Post-processing wrapper class
-//!
-//! Provides fbo(frame buffer object) binding method for drawing
-//! whole scene into attached color texture. With passed scene
-//! screen, do tone-mapping, gamma-correction and SSAO by default.
-//!
+/**
+ * @brief Post-processing wrapper class
+ * @details Provides fbo(frame buffer object) binding method for drawing
+ * whole scene into attached color texture. With passed scene
+ * screen, do tone-mapping, gamma-correction and SSAO by default.
+ */
 class PostProcessing
 {
  public:
-    //! Default constructor
+    /**
+     * @brief Construct a new Post Processing object
+     */
     PostProcessing();
-    //! Default destructor
+
+    /**
+     * @brief Destroy the Post Processing object
+     */
     ~PostProcessing();
-    //! Initialize the resources
+
+    /**
+     * @brief Initialize the fbo and shader resources
+     * @return true if framebuffer and shader init success
+     * @return false if framebuffer and shader init failed
+     */
     bool Initialize();
-    //! Rendering the post-processed screen image
+
+    /**
+     * @brief Rendering the post-processed screen image
+     */
     void Render() const;
-    //! Resize the generated resoures
+
+    /**
+     * @brief Resize the generated resoures
+     * @param extent framebuffer and color & depth texture extent
+     */
     void Resize(const glm::ivec2& extent);
-    //! Cleanup the generated resources
+
+    /**
+     * @brief Cleanup the generated resources
+     */
     void CleanUp();
-    //! Returns the framebuffer ID
-    inline GLuint GetFramebuffer() const
+
+    /**
+     * @brief Returns the framebuffer ID
+     * @return GLuint opengl resource ID of framebuffer
+     */
+    [[nodiscard]] inline GLuint GetFramebuffer() const
     {
         return _fbo;
     }

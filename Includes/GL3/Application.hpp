@@ -13,37 +13,81 @@ class Camera;
 class Shader;
 class Window;
 
-//!
-//! \brief      Main update part of the program.
-//!
-//! This class represents main application of the program.
-//! The program can generate multiple of Application instance, sharing opengl
-//! resources like framebuffer, shader, etc..
+/**
+ * @brief Main update part of the program.
+ * This class represents main application of the program.
+ * The program can generate multiple of Application instance, sharing opengl
+ * resources like framebuffer, shader, etc..
+ */
 class Application
 {
  public:
-    //! Default constructor
+    /**
+     * @brief Construct a new Application object
+     */
     Application();
-    //! Default desctrutor
+
+    /**
+     * @brief Destroy the Application object
+     */
     virtual ~Application();
-    //! Initialize the Application
+
+    /**
+     * @brief Initialize the Application
+     * @param window window instance for activating
+     * @param configure CLI arguments for app configuration
+     * @return true if app initialization success
+     * @return false if app initialization failed
+     */
     bool Initialize(std::shared_ptr<GL3::Window> window,
                     const cxxopts::ParseResult& configure);
-    //! Add camera instance with Perspective or Orthogonal
+
+    /**
+     * @brief Add camera instance with Perspective or Orthogonal
+     * @param camera r-value smart pointer to camera instance for playing
+     */
     void AddCamera(std::shared_ptr<GL3::Camera>&& camera);
-    //! Update the application with delta time.
+
+    /**
+     * @brief Update the application with delta time.
+     * @param dt delta time in microseconds
+     */
     void Update(double dt);
-    //! Draw the one frame of the application.
+
+    /**
+     * @brief Draw the one frame of the application.
+     */
     void Draw();
-    //! Clean up the all resources.
+
+    /**
+     * @brief Clean up the all resources.
+     */
     void CleanUp();
-    //! Returns the application title
+
+    /**
+     * @brief Returns the application title
+     * @return const char* application title string literal pointer
+     */
     virtual const char* GetAppTitle() const = 0;
-    //! Process the input key
+
+    /**
+     * @brief Process the input key
+     * @param key input key code defined in glfw3
+     */
     void ProcessInput(unsigned int key);
-    //! Process the mouse cursor positions
+
+    /**
+     * @brief Process the mouse cursor positions
+     * @param xpos cursor position x in the screen viewport
+     * @param ypos cursor position y in the screen viewport
+     */
     void ProcessCursorPos(double xpos, double ypos);
-    //! Process framebuffer resizing
+
+    /**
+     * @brief Resize the renderer resources
+     * @param width resized framebuffer width
+     * @param height resized framebuffer height
+     */
     void ProcessResize(int width, int height);
 
  protected:

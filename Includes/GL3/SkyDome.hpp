@@ -15,27 +15,46 @@ class Shader;
 
 /**
  * @brief Skydome environment map for Image Based Lighting
- * 
- * @details This skydome require hdr environment map image input and generates multiple textures.
- * [hdrTexture] : texture 2d resource contain given hdr envionment image
- * [accelTexture] : acceleration texture for speed-up generate several filters and brdf LUT
- * [brdflUT] : brdf lookup table texture which can be precalculated
- * [prefilteredCube] : prefiltered glossy texture which can be precalculated
- * 
+ * @details This skydome require hdr environment map image input and generates
+ * multiple textures. [hdrTexture] : texture 2d resource contain given hdr
+ * envionment image [accelTexture] : acceleration texture for speed-up generate
+ * several filters and brdf LUT [brdflUT] : brdf lookup table texture which can
+ * be precalculated [prefilteredCube] : prefiltered glossy texture which can be
+ * precalculated
+ *
  */
 class SkyDome
 {
  public:
-    //! Default constructor
+    /**
+     * @brief Construct a new Sky Dome object
+     */
     SkyDome();
-    //! Default destructor
+
+    /**
+     * @brief Destroy the Sky Dome object
+     */
     ~SkyDome();
-    //! Initialize Skydome with hdr environment map filepath.
-    //! This method will load hdr image and create each corresponded textures
+
+    /**
+     * @brief Initialize Skydome with hdr environment map filepath.
+     * This method will load hdr image and create each corresponded textures
+     * @param envPath environment hdr image file path
+     * @return true if skydome creation successful
+     * @return false if skydome creation failed
+     */
     bool Initialize(const std::string& envPath);
-    //! Render skydoem environment to screen
+
+    /**
+     * @brief Render skydoem environment to screen
+     * @param shader precompiled shader for rendering skybox
+     * @param alphaMode alphaMode flag for blending
+     */
     void Render(const std::shared_ptr<Shader>& shader, GLenum alphaMode);
-    //! Clean up the generated resources
+
+    /**
+     * @brief Clean up the generated resources
+     */
     void CleanUp();
 
     struct IBLTextureSet
@@ -47,17 +66,55 @@ class SkyDome
         GLuint accelTexture{ 0 };
     };
 
-    //! Returns const reference of IBL texture set.
-    const IBLTextureSet& GetIBLTextureSet() const;
+    /**
+     * @brief Returns const reference of IBL texture set.
+     * @return const IBLTextureSet& const reference of prebaked textures
+     * must avoid using this reference after skydome destruction.
+     */
+    [[nodiscard]] const IBLTextureSet& GetIBLTextureSet() const;
 
  private:
+    /**
+     * @brief Create a resources(vao, vbo, ebo) for cube mesh
+     */
     void CreateCube();
+
+    /**
+     * @brief render prebaked texels to given texture cube map
+     * @param fbo preconfigured framebuffer for offline rendering
+     * @param texture target texture of baking
+     * @param shader precompiled shader for rendering texels
+     * @param dim viewport dimension
+     * @param numMips number of mips
+     */
     void RenderToCube(GLuint fbo, GLuint texture, Shader* shader,
                       unsigned int dim, const unsigned int numMips);
+
+    /**
+     * @brief Create a Environment Accel Texture object
+     * @param pixels raw pointer to hdr image data
+     * @param size environment hdr image resolution
+     * @param accelTexture target texture for storing computed texels
+     */
     void CreateEnvironmentAccelTexture(const float* pixels, glm::uvec2 size,
                                        GLuint accelTexture);
+    
+    /**
+     * @brief baking BRDF lookup table
+     * @param dim desired brdf LUT texture dimension
+     */
     void IntegrateBRDF(unsigned int dim);
+
+    /**
+     * @brief baking diffuse map texture
+     * @param dim desired diffuse map texture dimension
+     */
     void PrefilterDiffuse(unsigned int dim);
+
+    /**
+     * @brief baking glossy map texture
+     * @param dim desired glossy texture dimension
+     */
     void PrefilterGlossy(unsigned int dim);
 
     IBLTextureSet _textureSet;

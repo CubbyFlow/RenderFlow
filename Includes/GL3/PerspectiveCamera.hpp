@@ -5,24 +5,37 @@
 
 namespace GL3
 {
-//!
-//! \brief      Camera class providing Perspective-projection.
-//!
-//! Inherit Camera class and overriding update method for perspective projection
-//! matrix.
-//!
+/**
+ * @brief Camera class providing Perspective-projection.
+ * @details Inherit Camera class and overriding update method for perspective
+ * projection matrix.
+ */
 class PerspectiveCamera : public Camera
 {
  public:
-    //! Default constructor
+    /**
+     * @brief Construct a new Perspective Camera object
+     */
     PerspectiveCamera();
-    //! Default destructor
+
+    /**
+     * @brief Destroy the Perspective Camera object
+     */
     ~PerspectiveCamera();
-    //! Set perspective camera properties
+
+    /**
+     * @brief Set perspective camera properties
+     * @param aspect window screen aspect ratio(width/height)
+     * @param fovDegree field of view in degree unit
+     * @param zNear near(minimum) z value
+     * @param zFar far(maximum) z value
+     */
     void SetProperties(float aspect, float fovDegree, float zNear, float zFar);
 
  private:
-    //! Update perpsective projection matrix;
+    /**
+     * @brief Update perpsective projection matrix;
+     */
     void OnUpdateMatrix() override;
 
     float _aspect;

@@ -15,40 +15,93 @@ class Application;
 class Window;
 class PostProcessing;
 
-//!
-//! \brief      OpenGL Renderer managing whole resources
-//!
-//! Enable to have multiple applciation and multiple context with one main
-//! shared context. This class provides render & update routine and profiling
-//! GPU time features. Pass whole input callbacks such as mouse, keyboard into
-//! GLFWwindow callback function collection.
-//!
+/**
+ * @brief OpenGL Renderer managing whole resources
+ * @details nable to have multiple applciation and multiple context with one
+ * main shared context. This class provides render & update routine and
+ * profiling GPU time features. Pass whole input callbacks such as mouse,
+ * keyboard into GLFWwindow callback function collection.
+ */
 class Renderer
 {
  public:
-    //! Default constructor
+    /**
+     * @brief Construct a new Renderer object
+     */
     Renderer();
-    //! Default desctrutor
+
+    /**
+     * @brief Destroy the Renderer object
+     */
     virtual ~Renderer();
-    //! Initialize the Renderer
+
+    /**
+     * @brief Initialize the Renderer
+     * @param configure CLI arguments for renderer configuration
+     * @return true if renderer initialization success
+     * @return false if renderer initialization failed
+     */
     bool Initialize(const cxxopts::ParseResult& configure);
-    //! Add application implementation
+
+    /**
+     * @brief Add application implementation
+     * @param app app instance which is derived by Application class
+     * for playing
+     * @param configure CLI arguments for app configuration
+     * @return true if app instance initialization success
+     * @return false if app instance initialization failed
+     */
     bool AddApplication(std::shared_ptr<Application> app,
                         const cxxopts::ParseResult& configure);
-    //! Update the application with delta time.
+
+    /**
+     * @brief Update the application with delta time.
+     * @param dt delta time in microseconds
+     */
     void UpdateFrame(double dt);
-    //! Draw the one frame of the application.
+
+    /**
+     * @brief Draw the one frame of the application.
+     */
     void DrawFrame();
-    //! Clean up the all resources.
+
+    /**
+     * @brief Clean up the all resources.
+     */
     void CleanUp();
-    //! Returns the current bound application
-    std::shared_ptr<GL3::Application> GetCurrentApplication() const;
-    //! Returns the current application's window
-    std::shared_ptr<GL3::Window> GetWindow() const;
-    //! Returns whether this renderer should exit or not.
-    bool GetRendererShouldExit() const;
-    //! Switch the current app to the next given application
+
+    /**
+     * @brief Returns the current bound application
+     * @return std::shared_ptr<GL3::Application> smart
+     * pointer to activated application instance
+     */
+    [[nodiscard]] std::shared_ptr<GL3::Application> GetCurrentApplication() const;
+
+    /**
+     * @brief Returns the current application's window
+     * @return std::shared_ptr<GL3::Window> smart
+     * pointer to activated window instance
+     */
+    [[nodiscard]] std::shared_ptr<GL3::Window> GetWindow() const;
+
+    /**
+     * @brief Returns whether this renderer should exit or not
+     * through glfw3
+     * @return true if window should closed
+     * @return false if window should not closed
+     */
+    [[nodiscard]] bool GetRendererShouldExit() const;
+
+    /**
+     * @brief Switch the current app to the next given application
+     * @param app smart pointer to application instance
+     */
     void SwitchApplication(std::shared_ptr<GL3::Application> app);
+
+    /**
+     * @brief Switch the current app to the next given application
+     * @param app index of application instance in the vector
+     */
     void SwitchApplication(size_t index);
 
  protected:
@@ -60,9 +113,15 @@ class Renderer
     virtual void OnProcessInput(unsigned int key) = 0;
     virtual void OnProcessResize(int width, int height) = 0;
 
-    //! Begin of GPU Time measurement
+    /**
+     * @brief Begin of GPU Time measurement
+     */
     void BeginGPUMeasure();
-    //! End of GPU Time measurement and returns elapsed time
+
+    /**
+     * @brief End of GPU Time measurement and returns elapsed time
+     * @return size_t returns elapsed time in milliseconds
+     */
     size_t EndGPUMeasure();
 
     std::weak_ptr<GL3::Application> _currentApp;
@@ -72,11 +131,24 @@ class Renderer
     std::unique_ptr<PostProcessing> _postProcessing;
 
  private:
-    //! Process the input key
+    /**
+     * @brief Process the input key
+     * @param key input key code defined in glfw3
+     */
     void ProcessInput(unsigned int key);
-    //! Process the mouse cursor positions
+
+    /**
+     * @brief Process the mouse cursor positions
+     * @param xpos cursor position x in the screen viewport
+     * @param ypos cursor position y in the screen viewport
+     */
     void ProcessCursorPos(double xpos, double ypos);
-    //! Resize the renderer resources
+
+    /**
+     * @brief Resize the renderer resources
+     * @param width resized framebuffer width
+     * @param height resized framebuffer height
+     */
     void ProcessResize(int width, int height);
 
     DebugUtils _debug;

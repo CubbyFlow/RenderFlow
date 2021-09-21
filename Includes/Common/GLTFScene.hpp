@@ -82,32 +82,49 @@ struct KHR_texture_transform
 bool CheckRequiredExtensions(const tinygltf::Model& model);
 };  // namespace GLTFExtension
 
-//!
-//! \brief      GLTF scene file loader class
-//!
-//! After parsing given gltf file, this class provides meshes and material
-//! information about parsed model.
-//!
-//! This class largely referenced on nvpro samples
-//! (https://github.com/nvpro-samples/vk_shaded_gltfscene)
-//!
+/**
+ * @brief GLTF scene file loader class
+ * @details After parsing given gltf file, this class provides meshes and
+ * material information about parsed model. This class largely referenced on
+ * nvpro samples (https://github.com/nvpro-samples/vk_shaded_gltfscene)
+ */
 class GLTFScene
 {
  public:
     using ImageCallback = std::function<void(const tinygltf::Image& image)>;
-    //! Default Constructor
+
+    /**
+     * @brief Construct a new GLTFScene object
+     */
     GLTFScene();
-    //! Default Virtual Destructor
+
+    /**
+     * @brief Destroy the GLTFScene object
+     */
     virtual ~GLTFScene();
-    //! Initialize the GLTFScene with gltf scene file path
+
+    /**
+     * @brief Load GLTFScene from the given scene filename and generate buffers
+     * @param filename gltf scene file path
+     * @param format desired vertex format for parsing scene
+     * @param imageCallback callback function for conduct operation on
+     * each texture image in gltf scene.
+     * @return true if gltf scene loading success
+     * @return false if gltf scene loading failed
+     */
     bool Initialize(const std::string& filename, VertexFormat format,
                     ImageCallback imageCallback = nullptr);
-    //! Update scene animation
-    //! Returns whether scene is modified or not
+
+    /**
+     * @brief Update scene animation
+     * @param animIndex index of animation want to play in the array
+     * @param timeElapsed elapsed time in microseconds.
+     * @return true if scene is modified by animation
+     * @return false if scene is not modified by animation
+     */
     bool UpdateAnimation(size_t animIndex, double timeElapsed);
 
  protected:
-    //! https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#reference-material
     struct GLTFMaterial
     {
         int shadingModel{
@@ -250,59 +267,140 @@ class GLTFScene
 
     SceneDimension _sceneDim;
 
-    //! Release scene source datum
+    /**
+     * @brief Release scene source datum
+     */
     void ReleaseSourceData();
 
  private:
-    //! Load GLTF model from the given filename and pass it by reference.
-    //! Returns success or not.
+    /**
+     * @brief Load GLTF model from the given filename and pass it by reference.
+     * @param model returns loaded tinygltf model to this pointer
+     * @param filename gltf scene file path
+     * @return true if tinygltf model loading is success
+     * @return false if tinygltf model loading is failed
+     */
     static bool LoadModel(tinygltf::Model* model, const std::string& filename);
-    //!
-    //! \brief      Parse attribute with desire type from the model.
-    //!
-    //! \tparam Type - attribute type to be retrieved from this function.
-    //!
+
+    /**
+     * @brief Parse attribute with desire type from the model.
+     * @tparam Type attribute type to be retrieved from this function.
+     * @param model initialized tinygltf model from gltf scene
+     * @param primitive
+     * @param attributes
+     * @param name
+     * @return true
+     * @return false
+     */
     template <typename Type>
     static bool GetAttributes(const tinygltf::Model& model,
                               const tinygltf::Primitive& primitive,
                               std::vector<Type>& attributes,
                               const std::string& name);
-    //! Returns the SRT matrix combination of this node.
+
+    /**
+     * @brief Returns the SRT matrix combination of this node.
+     * @param node parsed gltf scene node
+     * @return glm::mat4 calculated local transform matrix
+     */
     static glm::mat4 GetLocalMatrix(const GLTFNode& node);
-    //! Import materials from the model
+
+    /**
+     * @brief Import materials from the model
+     * @param model parse materials from initialized gltf model
+     */
     void ImportMaterials(const tinygltf::Model& model);
-    //! Process mesh in the model
+
+    /**
+     * @brief Process mesh in the model
+     * @param model
+     * @param mesh
+     * @param format
+     * @param name
+     */
     void ProcessMesh(const tinygltf::Model& model,
                      const tinygltf::Primitive& mesh, VertexFormat format,
                      const std::string& name);
-    //! Process node in the model recursively.
+    
+    /**
+     * @brief Process node in the model recursively.
+     * @param model 
+     * @param nodeIdx 
+     * @param parentIndex 
+     */
     void ProcessNode(const tinygltf::Model& model, int nodeIdx,
                      int parentIndex);
-    //! Update world coordinates of the given node and child nodes
-    void UpdateNode(int nodeIndex);
-    //! Process animation in the model
+    
+    /**
+     * @brief Update world coordinates of the given node and child nodes
+     * @param nodeIndex 
+     */
+    void UpdateNode(size_t nodeIndex);
+    
+    /**
+     * @brief Process animation in the model
+     * @param model 
+     * @param anim 
+     * @param channelOffset 
+     * @param samplerOffset 
+     */
     void ProcessAnimation(const tinygltf::Model& model,
                           const tinygltf::Animation& anim,
                           std::size_t channelOffset, std::size_t samplerOffset);
-    //! Process animation channel and append it to _sceneChannels
+    
+    /**
+     * @brief Process animation channel and append it to _sceneChannels
+     * @param channel 
+     */
     void ProcessChannel(const tinygltf::AnimationChannel& channel);
-    //! Process animation sampler and append it to _sceneSamplers
+    
+    /**
+     * @brief Process animation sampler and append it to _sceneSamplers
+     * @param model 
+     * @param sampler 
+     */
     void ProcessSampler(const tinygltf::Model& model,
                         const tinygltf::AnimationSampler& sampler);
-    //! Calculate the scene dimension from loaded nodes.
+    
+    /**
+     * @brief Calculate the scene dimension from loaded nodes.
+     */
     void CalculateSceneDimension();
-    //! Compute the uninitialized cameras with parsed scene dimension.
+
+    /**
+     * @brief Compute the uninitialized cameras with parsed scene dimension.
+     */
     void ComputeCamera();
-    //! Returns a vector of data for a tinygltf::Value
+    
+    /**
+     * @brief Returns a vector of data for a tinygltf::Value
+     * @tparam Type 
+     * @param value 
+     * @return std::vector<Type> 
+     */
     template <typename Type>
-    static std::vector<Type> GetVector(const tinygltf::Value& value);
-    //! Returns a value for a tinygltf::Value
+    [[nodiscard]] static std::vector<Type> GetVector(const tinygltf::Value& value);
+    
+    /**
+     * @brief Returns a value for a tinygltf::Value
+     * @tparam Type 
+     * @param value 
+     * @param name 
+     * @param val 
+     */
     template <typename Type>
     static void GetValue(const tinygltf::Value& value, const std::string& name,
                          Type& val);
-    //! Returns texture ID for a tinygltf::Value
+    
+    /**
+     * @brief Returns texture ID for a tinygltf::Value
+     * @param value 
+     * @param name 
+     * @param id 
+     */
     static void GetTextureID(const tinygltf::Value& value,
                              const std::string& name, int& id);
+    
     //! Temporary storages for processing nodes.
     std::unordered_map<size_t, std::vector<size_t>> _meshToPrimMap;
     std::vector<unsigned int> _u32Buffer;

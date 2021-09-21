@@ -10,45 +10,92 @@
 
 namespace GL3
 {
-//!
-//! \brief      FPS view Camera class
-//!
-//! This class provides view matrix and projection matrix getter for
-//! retrieving vertices which is transformed into camera space.
-//! Also provide UBO(UniformBufferObject) for binding camera to multiple shader.
-//!
+/**
+ * @brief FPS view Camera class
+ * @details This class provides view matrix and projection matrix getter for
+ * retrieving vertices which is transformed into camera space.
+ * Also provide UBO(UniformBufferObject) for binding camera to multiple shader.
+ */
 class Camera
 {
  public:
-    //! Default constructor
+    /**
+     * @brief Construct a new Camera object
+     */
     Camera();
-    //! Default destructor
+
+    /**
+     * @brief Destroy the Camera object
+     */
     virtual ~Camera();
-    //! Initialize the camera
+
+    /**
+     * @brief Fill the uniform buffer object with camera properties
+     * @return true if ubo resource initialization success
+     * @return false if ubo resource initialization failed
+     */
     bool SetupUniformBuffer();
-    //! Setup camera position, direction and up vector.
+
+    /**
+     * @brief Setup camera position, direction and up vector.
+     * @param pos camera origin in the global coordinate
+     * @param dir normalized camera direction
+     * @param up camera up vector
+     */
     void SetupCamera(const glm::vec3& pos, const glm::vec3& dir,
                      const glm::vec3& up);
-    //! Returns view matrix
-    glm::mat4 GetViewMatrix();
-    //! Returns projection matrix
-    glm::mat4 GetProjectionMatrix();
-    //! Bind the uniform buffer to the current context.
+
+    /**
+     * @brief Returns view matrix
+     * @return glm::mat4 camera view matrix
+     */
+    [[nodiscard]] glm::mat4 GetViewMatrix();
+
+    /**
+     * @brief Returns projection matrix
+     * @return glm::mat4 camera proejction matrix
+     */
+    [[nodiscard]] glm::mat4 GetProjectionMatrix();
+
+    /**
+     * @brief Bind the uniform buffer to the current context.
+     * @param bindingPoint UBO binding point for camera in current bound shader
+     */
     void BindCamera(GLuint bindingPoint) const;
-    //! Unbind camera
-    //! declared as static because nothing related with member variables or
-    //! method
+
+    /**
+     * @brief Unbind camera
+     */
     static void UnbindCamera();
-    //! Returns the uniform buffer ID
-    GLuint GetUniformBuffer() const;
-    //! Update the matrix with specific methods, such as perspective or
-    //! orthogonal.
+
+    /**
+     * @brief Returns the uniform buffer ID
+     * @return GLuint uniform buffer object resource ID
+     */
+    [[nodiscard]] GLuint GetUniformBuffer() const;
+
+    /**
+     * @brief Update the matrix with specific methods, such as perspective or
+     * orthogonal
+     */
     void UpdateMatrix();
-    //! Process the continuous key input
+
+    /**
+     * @brief Process the input key
+     * @param key input key code defined in glfw3
+     */
     void ProcessInput(unsigned int key);
-    //! Process the continuous mouse cursor position input
+
+    /**
+     * @brief Process the mouse cursor positions
+     * @param xpos cursor position x in the screen viewport
+     * @param ypos cursor position y in the screen viewport
+     */
     void ProcessCursorPos(double xpos, double ypos);
-    //! Cleanup the resources
+
+    /**
+     * @brief Cleanup the resources
+     */
     void CleanUp();
 
  protected:
@@ -57,9 +104,6 @@ class Camera
     glm::vec3 _position, _direction, _up;
 
  private:
-    //! Returns the uniform variable location matched with given name.
-    GLint GetUniformLocation(const std::string& name);
-
     std::unordered_map<std::string, GLint> _uniformCache;
     DebugUtils _debug;
     float _speed;

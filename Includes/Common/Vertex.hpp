@@ -5,7 +5,9 @@
 
 namespace Common
 {
-//! Vertex format enums.
+/**
+ * @brief Vertex format enums.
+ */
 enum class VertexFormat
 {
     //! None
@@ -70,35 +72,52 @@ enum class VertexFormat
         Position3Normal3TexCoord2Color4 | Tangent4,
 };
 
-//! Bit-wise operator for two vertex formats
-inline VertexFormat operator|(VertexFormat a, VertexFormat b)
+/**
+ * @brief Bit-wise operator for two vertex formats
+ * @return VertexFormat bitwise or(|) operated result
+ */
+[[nodiscard]] inline VertexFormat operator|(VertexFormat a, VertexFormat b)
 {
     return static_cast<VertexFormat>(static_cast<int>(a) | static_cast<int>(b));
 }
 
-//! Bit-wise operator for two vertex formats.
+/**
+ * @brief Bit-wise operator for two vertex formats
+ */
 inline void operator|=(VertexFormat& a, const VertexFormat& b)
 {
     a = static_cast<VertexFormat>(static_cast<int>(a) | static_cast<int>(b));
 }
 
-//! Bit-wise operator for two vertex formats.
-inline VertexFormat operator&(VertexFormat a, VertexFormat b)
+/**
+ * @brief Bit-wise operator for two vertex formats
+ * @return VertexFormat bitwise and(&) operated result
+ */
+[[nodiscard]] inline VertexFormat operator&(VertexFormat a, VertexFormat b)
 {
     return static_cast<VertexFormat>(static_cast<int>(a) & static_cast<int>(b));
 }
 
-//!
-//! \brief      Collection of vertex helper functions.
-//!
+/**
+ * @brief Collection of vertex helper functions.
+ */
 class VertexHelper
 {
  public:
-    //! Returns number of floats for a single vertex with given vertex format.
-    static std::size_t GetNumberOfFloats(VertexFormat format);
+    /**
+     * @brief Returns number of floats for a single vertex with given vertex
+     * format.
+     * @param format vertex format
+     * @return std::size_t number of floats in given vertex format
+     */
+    [[nodiscard]] static std::size_t GetNumberOfFloats(VertexFormat format);
 
-    //! Returns size of a single vertex with given format in bytes.
-    static std::size_t GetSizeInBytes(VertexFormat format);
+    /**
+     * @brief Returns size of a single vertex with given format in bytes.
+     * @param format vertex format
+     * @return std::size_t bytes size for given vertex format
+     */
+    [[nodiscard]] static std::size_t GetSizeInBytes(VertexFormat format);
 };
 
 }  // namespace Common

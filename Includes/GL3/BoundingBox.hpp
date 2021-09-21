@@ -5,32 +5,65 @@
 
 namespace GL3
 {
-//!
-//! \brief      Generic 3D axis aligned bounding box class.
-//!
+/**
+ * @brief Generic 3D axis aligned bounding box class.
+ */
 class BoundingBox
 {
  public:
-    //! Default constructor
+    /**
+     * @brief Construct a new Bounding Box object
+     */
     BoundingBox();
-    //! Default destructor
+
+    /**
+     * @brief Destroy the Bounding Box object
+     */
     ~BoundingBox();
-    //! Default copy constructor
+
+    /**
+     * @brief Default copy constructor
+     * @param bb other bounding box instance for copying
+     */
     BoundingBox(const BoundingBox& bb);
-    //! Default copy assign operator
+
+    /**
+     * @brief Default copy assignment constructor
+     * @param bb other bounding box instance for copying
+     * @return BoundingBox& return reference of this instance
+     */
     BoundingBox& operator=(const BoundingBox& bb);
-    //! Merge the point
+
+    /**
+     * @brief Merge the new vec3 point
+     */
     void Merge(const glm::vec3 newPoint);
-    //! Merge the bounding box
+
+    /**
+     * @brief Merge the bounding box
+     * @param bb other bounding box for merging
+     */
     void Merge(const BoundingBox& bb);
-    //! Reset the bounding box
+
+    /**
+     * @brief Reset the bounding box
+     */
     void Reset();
-    //! Corner getter
-    inline glm::vec3 GetLowerCorner() const
+
+    /**
+     * @brief Get the Lower Corner object
+     * @return glm::vec3 lower corner position
+     */
+    [[nodiscard]] inline glm::vec3 GetLowerCorner() const
     {
         return _lowerCorner;
     }
-    inline glm::vec3 GetUpperCorner() const
+
+    /**
+     * @brief Get the Upper Corner object
+     * @return glm::vec3 upper corner position
+     */
+    [[nodiscard]] inline glm::vec3 GetUpperCorner() const
     {
         return _upperCorner;
     }
