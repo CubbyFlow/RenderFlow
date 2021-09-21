@@ -166,7 +166,7 @@ class GLTFScene
         glm::vec3 scale{ 1.0f };
         glm::quat rotation{ 0.0f, 0.0f, 0.0f, 0.0f };
         std::vector<size_t> primMeshes;
-        std::vector<int> childNodes;
+        std::vector<size_t> childNodes;
         int parentNode{ -1 };
         int nodeIndex{ 0 };
     };
@@ -330,20 +330,9 @@ class GLTFScene
      */
     void ProcessNode(const tinygltf::Model& model, int nodeIdx,
                      int parentIndex);
-    
-    /**
-     * @brief Update world coordinates of the given node and child nodes
-     * @param nodeIndex 
-     */
+    //! Update world coordinates of the given node and child nodes
     void UpdateNode(size_t nodeIndex);
-    
-    /**
-     * @brief Process animation in the model
-     * @param model 
-     * @param anim 
-     * @param channelOffset 
-     * @param samplerOffset 
-     */
+    //! Process animation in the model
     void ProcessAnimation(const tinygltf::Model& model,
                           const tinygltf::Animation& anim,
                           std::size_t channelOffset, std::size_t samplerOffset);

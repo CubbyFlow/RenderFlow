@@ -41,7 +41,7 @@ jobs:
       run: |
         mkdir build
         conan install . -if build --build missing -s build_type=Release
-        cd build && cmake .. -DCUBBYFLOW_INSTALL_DIR=${GITHUB_WORKSPACE}/Libraries/cubbyflow -DCMAKE_BUILD_TYPE=Release
+        cd build && cmake .. -DCUBBYFLOW_INSTALL_DIR=${{ github.workspace }}/Libraries/cubbyflow -DCMAKE_BUILD_TYPE=Release
     - name: Build
       run: cd build && make
     - name: Run Unit Test

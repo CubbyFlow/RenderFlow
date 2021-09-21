@@ -79,9 +79,9 @@ if(CubbyFlow_FOUND)
 		set(CubbyFlow_LIBRARIES ${CubbyFlow_LIBRARY_RELEASE})
 	endif()
 	if (CubbyFlow_LIBRARY_DEBUG)
-  		set(CubbyFlow_LIBRARIES ${CubbyFlow_LIBRARY_DEBUG})
-  	endif()
-  	set(CubbyFlow_INCLUDE_DIRS ${CubbyFlow_INCLUDE_DIR})
+  	set(CubbyFlow_LIBRARIES ${CubbyFlow_LIBRARY_DEBUG})
+  endif()
+  set(CubbyFlow_INCLUDE_DIRS ${CubbyFlow_INCLUDE_DIR})
 endif()
 
 mark_as_advanced(

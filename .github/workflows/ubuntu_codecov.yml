@@ -50,7 +50,7 @@ jobs:
       run: |
         mkdir build
         conan install . -if build --build missing -s build_type=Debug
-        cd build && cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_COVERAGE=ON
+        cd build && cmake .. -DCUBBYFLOW_INSTALL_DIR=${{ github.workspace }}/Libraries/cubbyflow -DCMAKE_BUILD_TYPE=Debug -DBUILD_COVERAGE=ON
     - name: Build
       run: cd build && make
     - name: Run Unit Test

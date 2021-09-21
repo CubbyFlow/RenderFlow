@@ -156,7 +156,7 @@ bool Shader::HasUniformVariable(const std::string& name)
 
     GLint loc = GetUniformLocation(name);
 
-    return loc != GL_INVALID_INDEX;
+    return loc != -1;
 }
 
 GLint Shader::GetUniformLocation(const std::string& name)
@@ -167,8 +167,8 @@ GLint Shader::GetUniformLocation(const std::string& name)
     {
         GLint loc = glGetUniformLocation(this->_programID, name.c_str());
 
-        if (loc == GL_INVALID_INDEX)
-            return GL_INVALID_INDEX;
+        if (loc == -1)
+            return -1;
 
         _uniformCache.emplace(name, loc);
         return loc;

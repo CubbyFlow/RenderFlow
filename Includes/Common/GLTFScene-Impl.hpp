@@ -108,7 +108,7 @@ inline std::vector<Type> GLTFScene::GetVector(const tinygltf::Value& value)
         return retVec;
 
     retVec.resize(value.ArrayLen());
-    for (int i = 0; i < value.ArrayLen(); ++i)
+    for (int i = 0; i < static_cast<int>(value.ArrayLen()); ++i)
     {
         retVec[i] = static_cast<Type>(value.Get(i).IsNumber()
                                           ? value.Get(i).Get<double>()

@@ -10,28 +10,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define TINYGLTF_NOEXCEPTION  //! optional. disable exception handling.
-#define TINYGLTF_ENABLE_DRACO
 #define TINYGLTF_USE_CPP14
-
-#if defined(_MSC_VER)
-#pragma warning(push)
-#pragma warning(disable : 4100)
-#pragma warning(disable : 4804)
-#pragma warning(disable : 4127)
-#pragma warning(disable : 4018)
-#elif (defined(__GNUC__) || defined(__GNUG__)) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wbool-compare"
-#pragma GCC diagnostic ignored "-Wsign-compare"
-#endif
-
-#include <tiny_gltf.h>
-
-#if defined(_MSC_VER)
-#pragma warning(pop)
-#elif (defined(__GNUC__) || defined(__GNUG__)) && !defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
+#include <tinygltf/tiny_gltf.h>
 
 namespace Common
 {
@@ -563,18 +543,18 @@ void GLTFScene::ProcessNode(const tinygltf::Model& model, int nodeIdx,
         newNode.parentNode = parentIndex;
 
         //! Push newnode to both linear scene node array and parent child array
-        const int newNodeIndex = static_cast<int>(_sceneNodes.size());
+        const size_t newNodeIndex = _sceneNodes.size();
         _sceneNodes.emplace_back(std::move(newNode));
         if (parentIndex != -1)
             _sceneNodes[parentIndex].childNodes.push_back(newNodeIndex);
 
         //! Call ProcessNode recursively to the childs of this newNode
-        for (auto child : node.children)
-            ProcessNode(model, child, newNodeIndex);
+        for (int child : node.children)
+            ProcessNode(model, child, static_cast<int>(newNodeIndex));
     }
 }
 
-void GLTFScene::UpdateNode(int nodeIndex)
+void GLTFScene::UpdateNode(size_t nodeIndex)
 {
     auto& node = _sceneNodes[nodeIndex];
     if (!node.primMeshes.empty())
@@ -588,7 +568,7 @@ void GLTFScene::UpdateNode(int nodeIndex)
         }
     }
 
-    for (int child : node.childNodes)
+    for (size_t child : node.childNodes)
         UpdateNode(child);
 }
 
@@ -668,7 +648,7 @@ bool GLTFScene::UpdateAnimation(size_t animIndex, double timeElapsed)
 
     if (sceneModified)
     {
-        for (int i = 0; i < _sceneNodes.size(); ++i)
+        for (size_t i = 0; i < _sceneNodes.size(); ++i)
             UpdateNode(i);
     }
 
