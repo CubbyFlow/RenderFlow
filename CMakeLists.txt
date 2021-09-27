@@ -80,5 +80,6 @@ find_package(glm MODULE REQUIRED)
 
 # Project modules
 add_subdirectory(Sources)
-add_subdirectory(Extensions/Fluid2GLTF)
 add_subdirectory(Extensions/FlowEditor)
+add_subdirectory(Extensions/Fluid2GLTF)
+add_subdirectory(Tests/UnitTests)
