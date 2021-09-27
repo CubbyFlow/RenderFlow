@@ -7,7 +7,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-#include <stb_image.h>
+#include <tinygltf/stb_image.h>
 
 bool CheckTriangle(const glm::vec3 v1, const glm::vec3 v2, const glm::vec3 v3)
 {

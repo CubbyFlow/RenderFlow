@@ -1,7 +1,7 @@
 #ifndef GLTF_SCENE_HPP
 #define GLTF_SCENE_HPP
 
-#include <tiny_gltf.h>
+#include <tinygltf/tiny_gltf.h>
 #include <Common/Vertex.hpp>
 #include <functional>
 #include <glm/gtc/quaternion.hpp>

@@ -5,7 +5,6 @@ set(PUBLIC_HDR_DIR ${PROJECT_SOURCE_DIR}/Includes)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Import essential packages
-find_package(TinyGLTF MODULE REQUIRED)
 find_package(tinyobjloader MODULE REQUIRED)
 
 # Set Common public headers
@@ -76,7 +75,6 @@ target_include_directories(${target}
     ${glm_INCLUDE_DIR}
     ${glad_INCLUDE_DIR}
     ${Draco_INCLUDE_DIR}
-    ${TinyGLTF_INCLUDE_DIR}
     ${cxxopts_INCLUDE_DIR}
     ${tinyobjloader_INCLUDE_DIR}
     ${glfw_INCLUDE_DIR}
@@ -116,7 +114,6 @@ target_link_libraries(${target}
     ${glfw_LIBRARIES}
     ${glm_LIBRARIES}
     ${imgui_LIBRARIES}
-    ${TinyGLTF_LIBRARIES}
     ${glad_LIBRARIES}
     ${Draco_LIBRARIES}
 )

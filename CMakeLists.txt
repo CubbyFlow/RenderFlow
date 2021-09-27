@@ -28,6 +28,7 @@ endif()
 # Includes
 include_directories(Includes)
 include_directories(Resources)
+include_directories(Libraries)
 include_directories(${CubbyFlow_INCLUDE_DIR})
 
 # Compile options
