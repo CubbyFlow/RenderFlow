@@ -67,11 +67,11 @@ bool AssetLoader::LoadObjFile(const std::string& path,
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
-    std::string err;
+    std::string warn, err;
 
     //! Load obj file with tinyobjloader
     bool ret =
-        tinyobj::LoadObj(&attrib, &shapes, &materials, &err, path.c_str());
+        tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str());
     if (!ret)
     {
         std::cerr << "[AssetLoader:LoadObjFile] Failed to load " << path
