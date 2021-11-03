@@ -5,7 +5,7 @@ set(PUBLIC_HDR_DIR ${PROJECT_SOURCE_DIR}/Includes)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Import essential packages
-find_package(tinyobjloader MODULE REQUIRED)
+find_package(tinyobjloader CONFIG REQUIRED)
 
 # Set Common public headers
 set(COMMON_PUBLIC_HDRS
@@ -73,9 +73,6 @@ target_include_directories(${target}
     $<BUILD_INTERFACE:${PUBLIC_HDR_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
     ${glm_INCLUDE_DIR}
-    ${glad_INCLUDE_DIR}
-    ${Draco_INCLUDE_DIR}
-    ${cxxopts_INCLUDE_DIR}
     ${tinyobjloader_INCLUDE_DIR}
     ${glfw_INCLUDE_DIR}
     PRIVATE
@@ -111,11 +108,10 @@ target_link_libraries(${target}
     PUBLIC
     ${DEFAULT_LINKER_OPTIONS}
 	${DEFAULT_LIBRARIES}    
-    ${glfw_LIBRARIES}
-    ${glm_LIBRARIES}
-    ${imgui_LIBRARIES}
-    ${glad_LIBRARIES}
-    ${Draco_LIBRARIES}
+    glfw
+    glm::glm
+    glad::glad
+    cxxopts::cxxopts
 )
 
 # Compile definitions

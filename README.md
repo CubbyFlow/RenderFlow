@@ -24,20 +24,25 @@ After install header & library of the CubbyFlow, Now you can configure RenderFlo
 git clone https://github.com/CubbyFlow/RenderFlow.git --recursive
 cd RenderFlow
 mkdir build
-conan install . -if build --build missing -s build_type=Debug
 cd build
-cmake .. -DCUBBYFLOW_INSTALL_DIR=${DIR_YOU_INSTALLED} && make
+cmake .. -DCUBBYFLOW_INSTALL_DIR=${DIR_YOU_INSTALLED} -DCMAKE_TOOLCHAIN_FILE=${PATH_TO_VCPKG}"scripts/buildsystems/vcpkg.cmake" && make
 ```
 
-## dependency
+## Vcpkg dependency
 *   [CubbyFlow](https://github.com/CubbyFlow/CubbyFlow)
 *   [cxxopts](https://github.com/jarro2783/cxxopts)
-*   [glad](https://github.com/Dav1dde/glad)
-*   [glfw](https://github.com/glfw/glfw)
+*   [glad](https://github.com/Dav1dde/glad)[gl-api-45]
+*   [glfw3](https://github.com/glfw/glfw)
 *   [imgui](https://github.com/ocornut/imgui)
 *   [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
+
+#### One line vcpkg dependency installation
+```bash
+vcpkg install glad[gl-api-45]:{YOUR_ARCH} glfw3:{YOUR_ARCH} glm:{YOUR_ARCH} imgui:{YOUR_ARCH} tinyobjloader:{YOUR_ARCH}
+```
+
+## Other dependency
 *   [tinygltf](https://github.com/syoyo/tinygltf)
-*   [draco](https://github.com/google/draco)
 *   [doctest](https://github.com/onqtam/doctest)
 
 ## How To Contribute
