@@ -4,7 +4,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <iostream>
-#include <unordered_set>
 
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -15,34 +14,6 @@
 
 namespace Common
 {
-bool GLTFExtension::CheckRequiredExtensions(const tinygltf::Model& model)
-{
-    static std::unordered_set<std::string> kSupportedExtensions{
-        KHR_LIGHTS_PUNCTUAL_EXTENSION_NAME,
-        KHR_MATERIALS_CLEARCOAT_EXTENSION_NAME,
-        KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS_EXTENSION_NAME,
-        KHR_MATERIALS_SHEEN_EXTENSION_NAME,
-        KHR_MATERIALS_TRANSMISSION_EXTENSION_NAME,
-        KHR_MATERIALS_UNLIT_EXTENSION_NAME,
-        KHR_MATERIALS_VARIANTS_EXTENSION_NAME,
-        KHR_MESH_QUANTIZATION_EXTENSION_NAME,
-        KHR_TEXTURE_TRANSFORM_EXTENSION_NAME,
-    };
-
-    bool bSupported = true;
-    for (auto& extension : model.extensionsRequired)
-    {
-        if (kSupportedExtensions.find(extension) == kSupportedExtensions.end())
-        {
-            std::cerr << "The extension " << extension
-                      << " is REQUIRED and not supproted" << std::endl;
-            bSupported = false;
-        }
-    }
-
-    return bSupported;
-}
-
 GLTFScene::GLTFScene()
 {
     //! Do nothing
@@ -63,8 +34,15 @@ bool GLTFScene::Initialize(const std::string& filename, VertexFormat format,
     if (!LoadModel(&model, filename))
         return false;
 
-    if (!GLTFExtension::CheckRequiredExtensions(model))
-        return false;
+    for (const auto& extension : model.extensionsRequired)
+    {
+        if (!GLTFExtension::CheckRequiredExtension(extension))
+        {
+            std::cerr << "The extension " << extension
+                      << " is REQUIRED and not supproted" << std::endl;
+            return false;
+        }
+    }
 
     size_t numVertices{ 0 }, numIndices{ 0 }, primCount{ 0 }, meshCount{ 0 };
     for (const auto& mesh : model.meshes)

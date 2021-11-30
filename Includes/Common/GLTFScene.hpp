@@ -2,6 +2,7 @@
 #define GLTF_SCENE_HPP
 
 #include <tinygltf/tiny_gltf.h>
+#include <Common/GLTFMaterial.hpp>
 #include <Common/Vertex.hpp>
 #include <functional>
 #include <glm/gtc/quaternion.hpp>
@@ -13,73 +14,8 @@
 #include <string>
 #include <unordered_map>
 
-//! KHR extension list
-//! (https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos)
-#define KHR_LIGHTS_PUNCTUAL_EXTENSION_NAME "KHR_lights_punctual"
-#define KHR_MATERIALS_CLEARCOAT_EXTENSION_NAME "KHR_materials_clearcoat"
-#define KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS_EXTENSION_NAME \
-    "KHR_materials_pbrSpecularGlossiness"
-#define KHR_MATERIALS_SHEEN_EXTENSION_NAME "KHR_materials_sheen"
-#define KHR_MATERIALS_TRANSMISSION_EXTENSION_NAME "KHR_materials_transmission"
-#define KHR_MATERIALS_UNLIT_EXTENSION_NAME "KHR_materials_unlit"
-#define KHR_MATERIALS_VARIANTS_EXTENSION_NAME "KHR_materials_variants"
-#define KHR_MESH_QUANTIZATION_EXTENSION_NAME "KHR_mesh_quantization"
-#define KHR_TEXTURE_TRANSFORM_EXTENSION_NAME "KHR_texture_transform"
-
 namespace Common
 {
-namespace GLTFExtension
-{
-struct KHR_materials_clearcoat
-{
-    float factor{ 0.0f };
-    int texture{ -1 };
-    float roughnessFactor{ 0.0f };
-    int roughnessTexture{ -1 };
-    int normalTexture{ -1 };
-};
-
-struct KHR_materials_pbrSpecularGlossiness
-{
-    glm::vec4 diffuseFactor{ 1.0f, 1.0f, 1.0f, 1.0f };
-    int diffuseTexture{ -1 };
-    glm::vec3 specularFactor{ 1.0f, 1.f, 1.0f };
-    float glossinessFactor{ 1.0f };
-    int specularGlossinessTexture{ -1 };
-};
-
-struct KHR_materials_sheen
-{
-    glm::vec3 colorFactor{ 0.0f, 0.0f, 0.0f };
-    int colorTexture{ -1 };
-    float roughnessFactor{ 0.0f };
-    int roughnessTexture{ -1 };
-};
-
-struct KHR_materials_transmission
-{
-    float factor{ 0.0f };
-    int texture{ -1 };
-};
-
-struct KHR_materials_unlit
-{
-    int active{ 0 };
-};
-
-struct KHR_texture_transform
-{
-    glm::vec2 offset{ 0.0f, 0.0f };
-    float rotation{ 0.0f };
-    glm::vec2 scale{ 1.0f };
-    int texCoord{ 0 };
-    glm::mat3 uvTransform{
-        1
-    };  // Computed transform of offset, rotation, scale
-};
-
-bool CheckRequiredExtensions(const tinygltf::Model& model);
-};  // namespace GLTFExtension
 
 /**
  * @brief GLTF scene file loader class
@@ -124,39 +60,6 @@ class GLTFScene
     bool UpdateAnimation(size_t animIndex, double timeElapsed);
 
  protected:
-    struct GLTFMaterial
-    {
-        int shadingModel{
-            0
-        };  //! 0: metallic-roughness, 1: specular-glossiness
-
-        //! pbrMetallicRoughness
-        glm::vec4 baseColorFactor{ 1.0f, 1.0f, 1.0f, 1.0f };
-        int baseColorTexture{ -1 };
-        float metallicFactor{ 1.0f };
-        float roughnessFactor{ 1.0f };
-        int metallicRoughnessTexture{ -1 };
-
-        int emissiveTexture{ -1 };
-        glm::vec3 emissiveFactor{ 0.0f, 0.0f, 0.0f };
-        int alphaMode{ 0 };  //! 0 : OPAQUE, 1 : MASK, 2 : BLEND
-        float alphaCutoff{ 0.5f };
-        int doubleSided{ 0 };
-
-        int normalTexture{ -1 };
-        float normalTextureScale{ 1.0f };
-        int occlusionTexture{ -1 };
-        float occlusionTextureStrength{ 1.0f };
-
-        //! Extensions
-        GLTFExtension::KHR_materials_pbrSpecularGlossiness specularGlossiness;
-        GLTFExtension::KHR_texture_transform textureTransform;
-        GLTFExtension::KHR_materials_clearcoat clearcoat;
-        GLTFExtension::KHR_materials_sheen sheen;
-        GLTFExtension::KHR_materials_transmission transmission;
-        GLTFExtension::KHR_materials_unlit unlit;
-    };
-
     struct GLTFNode
     {
         glm::mat4 world{ 1.0f };
@@ -320,12 +223,12 @@ class GLTFScene
     void ProcessMesh(const tinygltf::Model& model,
                      const tinygltf::Primitive& mesh, VertexFormat format,
                      const std::string& name);
-    
+
     /**
      * @brief Process node in the model recursively.
-     * @param model 
-     * @param nodeIdx 
-     * @param parentIndex 
+     * @param model
+     * @param nodeIdx
+     * @param parentIndex
      */
     void ProcessNode(const tinygltf::Model& model, int nodeIdx,
                      int parentIndex);
@@ -335,21 +238,21 @@ class GLTFScene
     void ProcessAnimation(const tinygltf::Model& model,
                           const tinygltf::Animation& anim,
                           std::size_t channelOffset, std::size_t samplerOffset);
-    
+
     /**
      * @brief Process animation channel and append it to _sceneChannels
-     * @param channel 
+     * @param channel
      */
     void ProcessChannel(const tinygltf::AnimationChannel& channel);
-    
+
     /**
      * @brief Process animation sampler and append it to _sceneSamplers
-     * @param model 
-     * @param sampler 
+     * @param model
+     * @param sampler
      */
     void ProcessSampler(const tinygltf::Model& model,
                         const tinygltf::AnimationSampler& sampler);
-    
+
     /**
      * @brief Calculate the scene dimension from loaded nodes.
      */
@@ -359,36 +262,37 @@ class GLTFScene
      * @brief Compute the uninitialized cameras with parsed scene dimension.
      */
     void ComputeCamera();
-    
+
     /**
      * @brief Returns a vector of data for a tinygltf::Value
-     * @tparam Type 
-     * @param value 
-     * @return std::vector<Type> 
+     * @tparam Type
+     * @param value
+     * @return std::vector<Type>
      */
     template <typename Type>
-    [[nodiscard]] static std::vector<Type> GetVector(const tinygltf::Value& value);
-    
+    [[nodiscard]] static std::vector<Type> GetVector(
+        const tinygltf::Value& value);
+
     /**
      * @brief Returns a value for a tinygltf::Value
-     * @tparam Type 
-     * @param value 
-     * @param name 
-     * @param val 
+     * @tparam Type
+     * @param value
+     * @param name
+     * @param val
      */
     template <typename Type>
     static void GetValue(const tinygltf::Value& value, const std::string& name,
                          Type& val);
-    
+
     /**
      * @brief Returns texture ID for a tinygltf::Value
-     * @param value 
-     * @param name 
-     * @param id 
+     * @param value
+     * @param name
+     * @param id
      */
     static void GetTextureID(const tinygltf::Value& value,
                              const std::string& name, int& id);
-    
+
     //! Temporary storages for processing nodes.
     std::unordered_map<size_t, std::vector<size_t>> _meshToPrimMap;
     std::vector<unsigned int> _u32Buffer;
