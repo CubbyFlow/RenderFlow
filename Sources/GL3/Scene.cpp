@@ -25,28 +25,27 @@ bool Scene::Initialize(const std::string& filename, Common::VertexFormat format)
 {
     auto timerStart = std::chrono::high_resolution_clock::now();
 
-    if (!Common::GLTFScene::Initialize(
-            filename, format, [&](const tinygltf::Image& image) {
-                std::string name =
-                    image.name.empty()
-                        ? std::string("texture") +
-                              std::to_string(this->_textures.size())
-                        : image.name;
-                GLuint texture;
-                glCreateTextures(GL_TEXTURE_2D, 1, &texture);
-                glTextureParameteri(texture, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                glTextureParameteri(texture, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER,
-                                    GL_LINEAR_MIPMAP_LINEAR);
-                glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                glTextureStorage2D(texture, 1, GL_RGBA8, image.width,
-                                   image.height);
-                glTextureSubImage2D(texture, 0, 0, 0, image.width, image.height,
-                                    GL_RGBA, GL_UNSIGNED_BYTE, &image.image[0]);
-                glGenerateTextureMipmap(texture);
-                _debug.SetObjectName(GL_TEXTURE, texture, name);
-                _textures.emplace_back(texture);
-            }))
+    auto imageCallback = [&](const tinygltf::Image& image) {
+        std::string name = image.name.empty()
+                               ? std::string("texture") +
+                                     std::to_string(this->_textures.size())
+                               : image.name;
+        GLuint texture;
+        glCreateTextures(GL_TEXTURE_2D, 1, &texture);
+        glTextureParameteri(texture, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTextureParameteri(texture, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER,
+                            GL_LINEAR_MIPMAP_LINEAR);
+        glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTextureStorage2D(texture, 1, GL_RGBA8, image.width, image.height);
+        glTextureSubImage2D(texture, 0, 0, 0, image.width, image.height,
+                            GL_RGBA, GL_UNSIGNED_BYTE, &image.image[0]);
+        glGenerateTextureMipmap(texture);
+        _debug.SetObjectName(GL_TEXTURE, texture, name);
+        _textures.emplace_back(texture);
+    };
+    
+    if (!Common::GLTFScene::Initialize(filename, format, imageCallback))
         return false;
 
     auto timerEnd = std::chrono::high_resolution_clock::now();
@@ -239,10 +238,7 @@ void Scene::UpdateMatrixBuffer()
         {
             NodeMatrix instance;
             instance.first = node.world;
-            if (glm::determinant(instance.first) == 0.0f)
-                instance.second = glm::transpose(instance.first);
-            else
-                instance.second = glm::transpose(glm::inverse(instance.first));
+            instance.second = glm::transpose(glm::inverse(instance.first));
             matrices.emplace_back(std::move(instance));
         }
     }
