@@ -5,7 +5,7 @@
 
 namespace GL3
 {
-PostProcessing::PostProcessing() : _fbo(0), _color(0), _depth(0)
+PostProcessing::PostProcessing() : _fbo(0), _color(0), _depth(0), _vao(0)
 {
     //! Do nothing
 }
