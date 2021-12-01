@@ -71,6 +71,9 @@ void DebugUtils::PrintStack()
 
     frames = CaptureStackBackTrace(0, 200, stack, NULL);
     symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
+    if (symbol == nullptr)
+        return;
+
     symbol->MaxNameLen = 255;
     symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
 
