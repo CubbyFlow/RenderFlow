@@ -21,14 +21,17 @@ jobs:
     - uses: actions/checkout@v1
       with:
         submodules: true
-    - name: Install Conan Package Manager
+    - name: Install vcpkg
       run: |
-        pip install conan
+        git clone https://github.com/Microsoft/vcpkg.git
+        .\vcpkg\bootstrap-vcpkg.bat
+        vcpkg install cxxopts:x64-windows glad[gl-api-45]:x64-windows glfw3:x64-windows glm:x64-windows imgui:x64-windows tinyobjloader:x64-windows
+        vcpkg integrate install
     - name: Configure Build
       run: |
         mkdir build
-        conan install . -if build --build missing -s build_type=Release
-        cd build && cmake .. -DCMAKE_GENERATOR_PLATFORM=x64 -DCUBBYFLOW_INSTALL_DIR=${{ github.workspace }}/Libraries/cubbyflow -DCMAKE_BUILD_TYPE=Release
+        C:/vcpkg/vcpkg list
+        cd build && cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DCUBBYFLOW_INSTALL_DIR=${{ github.workspace }}/Libraries/cubbyflow -DCMAKE_BUILD_TYPE=Release
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
     - name: Build

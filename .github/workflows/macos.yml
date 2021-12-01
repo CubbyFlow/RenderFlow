@@ -33,15 +33,19 @@ jobs:
         sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
         echo "CC=clang" >> $GITHUB_ENV
         echo "CXX=clang++" >> $GITHUB_ENV
-    - name: Install Conan Package Manager
-      shell: bash
+    - name: Install vcpkg
       run: |
-        brew install conan
+        git clone https://github.com/Microsoft/vcpkg.git
+        ./vcpkg/bootstrap-vcpkg.sh
+        ./vcpkg/vcpkg install cxxopts:x64-osx glad[gl-api-45]:x64-osx glfw3:x64-osx glm:x64-osx imgui:x64-osx tinyobjloader:x64-osx
+        ./vcpkg/vcpkg integrate install
+        mv vcpkg /Users/runner/work
+        echo "vcpkg_path=/Users/runner/work/vcpkg" >> $GITHUB_ENV
     - name: Configure Build
       run: |
         mkdir build
-        conan install . -if build --build missing -s build_type=Release
-        cd build && cmake .. -DCUBBYFLOW_INSTALL_DIR=${{ github.workspace }}/Libraries/cubbyflow -DCMAKE_BUILD_TYPE=Release
+        ${{ env.vcpkg_path }}/vcpkg list
+        cd build && cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ env.vcpkg_path }}/scripts/buildsystems/vcpkg.cmake -DCUBBYFLOW_INSTALL_DIR=${{ github.workspace }}/Libraries/cubbyflow -DCMAKE_BUILD_TYPE=Release
     - name: Build
       run: cd build && make
     - name: Run Unit Test

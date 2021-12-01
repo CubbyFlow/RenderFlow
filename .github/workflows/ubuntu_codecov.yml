@@ -42,15 +42,19 @@ jobs:
           echo "CC=clang-${{ matrix.version }}" >> $GITHUB_ENV
           echo "CXX=clang++-${{ matrix.version }}" >> $GITHUB_ENV
         fi
-    - name: Install Conan Package Manager
-      shell: bash
+    - name: Install vcpkg
       run: |
-        pip3 install conan
+        git clone https://github.com/Microsoft/vcpkg.git
+        ./vcpkg/bootstrap-vcpkg.sh
+        ./vcpkg/vcpkg install cxxopts:x64-linux glad[gl-api-45]:x64-linux glfw3:x64-linux glm:x64-linux imgui:x64-linux tinyobjloader:x64-linux
+        ./vcpkg/vcpkg integrate install
+        mv vcpkg /home/runner/work/
+        echo "vcpkg_path=/home/runner/work/vcpkg" >> $GITHUB_ENV
     - name: Configure Build
       run: |
         mkdir build
-        conan install . -if build --build missing -s build_type=Debug
-        cd build && cmake .. -DCUBBYFLOW_INSTALL_DIR=${{ github.workspace }}/Libraries/cubbyflow -DCMAKE_BUILD_TYPE=Debug -DBUILD_COVERAGE=ON
+        ${{ env.vcpkg_path }}/vcpkg list
+        cd build && cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ env.vcpkg_path }}/scripts/buildsystems/vcpkg.cmake -DCUBBYFLOW_INSTALL_DIR=${{ github.workspace }}/Libraries/cubbyflow -DCMAKE_BUILD_TYPE=Debug -DBUILD_COVERAGE=ON
     - name: Build
       run: cd build && make
     - name: Run Unit Test
