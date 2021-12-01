@@ -1,7 +1,7 @@
 # RenderFlow
 
 [![CodeFactor](https://www.codefactor.io/repository/github/cubbyflow/renderflow/badge)](https://www.codefactor.io/repository/github/cubbyflow/renderflow)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/82c7218998df4b4eb236ad21ae96c1fe)](https://www.codacy.com/gh/Snowapril/RenderFlow/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Snowapril/RenderFlow&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/78a9b0371b4d4053aa78fe9e6b55e75b)](https://www.codacy.com/gh/CubbyFlow/RenderFlow/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=CubbyFlow/RenderFlow&amp;utm_campaign=Badge_Grade)
 ![Ubuntu github action](https://github.com/CubbyFlow/RenderFlow/actions/workflows/ubuntu.yml/badge.svg?branch=main)
 ![Window github action](https://github.com/CubbyFlow/RenderFlow/actions/workflows/window.yml/badge.svg?branch=main)
 ![MacOS github action](https://github.com/CubbyFlow/RenderFlow/actions/workflows/macos.yml/badge.svg?branch=main)
