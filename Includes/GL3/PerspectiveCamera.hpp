@@ -10,7 +10,7 @@ namespace GL3
  * @details Inherit Camera class and overriding update method for perspective
  * projection matrix.
  */
-class PerspectiveCamera : public Camera
+class PerspectiveCamera final : public Camera
 {
  public:
     /**
