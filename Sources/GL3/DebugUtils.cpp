@@ -7,6 +7,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include <DbgHelp.h>
+#include <array>
 #pragma comment(lib, "Dbghelp")
 #define STDCALL __stdcall
 #else
@@ -31,17 +32,21 @@ void DebugUtils::EnabelDebugLabel(bool enable)
 }
 
 void DebugUtils::SetObjectName(GLenum identifier, GLuint name,
-                               const std::string& label) const
+                               const std::string& label)
 {
     if (DebugUtils::_labelEnabled)
+    {
         glObjectLabel(identifier, name, -1, label.c_str());
+    }
 }
 
 DebugUtils::ScopedLabel::ScopedLabel(const std::string& message)
 {
     if (DebugUtils::_labelEnabled)
+    {
         glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, DebugUtils::_scopeID++,
                          -1, message.c_str());
+    }
 }
 
 DebugUtils::ScopedLabel::~ScopedLabel()
@@ -58,7 +63,7 @@ DebugUtils::ScopedLabel::~ScopedLabel()
 void DebugUtils::PrintStack()
 {
     unsigned int i;
-    void* stack[100];
+    std::array<void*, 100> stack;
     unsigned short frames;
     SYMBOL_INFO* symbol;
     HANDLE process;
@@ -67,12 +72,14 @@ void DebugUtils::PrintStack()
 
     SymSetOptions(SYMOPT_LOAD_LINES);
 
-    SymInitialize(process, NULL, TRUE);
+    SymInitialize(process, nullptr, TRUE);
 
-    frames = CaptureStackBackTrace(0, 200, stack, NULL);
+    frames = CaptureStackBackTrace(0, 200, stack.data(), NULL);
     symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
     if (symbol == nullptr)
+    {
         return;
+    }
 
     symbol->MaxNameLen = 255;
     symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
@@ -80,12 +87,12 @@ void DebugUtils::PrintStack()
     printf("---------------------Stack Trace---------------------\n");
     for (i = 0; i < frames; i++)
     {
-        SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
+        SymFromAddr(process, (DWORD64)(stack[i]), nullptr, symbol);
         DWORD dwDisplacement;
         IMAGEHLP_LINE64 line;
 
         line.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
-        if (!strstr(symbol->Name, "VSDebugLib::") &&
+        if (strstr(symbol->Name, "VSDebugLib::") == nullptr &&
             SymGetLineFromAddr64(process, (DWORD64)(stack[i]), &dwDisplacement,
                                  &line))
         {
@@ -93,8 +100,10 @@ void DebugUtils::PrintStack()
                    line.LineNumber);
         }
 
-        if (0 == strcmp(symbol->Name, "main"))
+        if (strcmp(symbol->Name, "main") == 0)
+        {
             break;
+        }
     }
     printf("-----------------------------------------------------\n");
     free(symbol);

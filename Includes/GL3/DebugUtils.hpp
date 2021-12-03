@@ -63,8 +63,8 @@ class DebugUtils
      * @param label The address of a string containing the label to assign to
      the object.
      */
-    void SetObjectName(GLenum identifier, GLuint name,
-                       const std::string& label) const;
+    static void SetObjectName(GLenum identifier, GLuint name,
+                              const std::string& label);
 
     /**
      * @brief opengl scoped label using constructor & destructor
@@ -95,7 +95,7 @@ class DebugUtils
      */
     [[nodiscard]] ScopedLabel ScopeLabel(const std::string& message) const
     {
-        return ScopedLabel(message);
+        return { message };
     }
 
  private:

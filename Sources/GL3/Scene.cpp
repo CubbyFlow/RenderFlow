@@ -11,16 +11,6 @@ using namespace glm;
 
 namespace GL3
 {
-Scene::Scene()
-{
-    //! Do nothing
-}
-
-Scene::~Scene()
-{
-    //! Do nothing
-}
-
 bool Scene::Initialize(const std::string& filename, Common::VertexFormat format)
 {
     auto timerStart = std::chrono::high_resolution_clock::now();
@@ -41,12 +31,14 @@ bool Scene::Initialize(const std::string& filename, Common::VertexFormat format)
         glTextureSubImage2D(texture, 0, 0, 0, image.width, image.height,
                             GL_RGBA, GL_UNSIGNED_BYTE, &image.image[0]);
         glGenerateTextureMipmap(texture);
-        _debug.SetObjectName(GL_TEXTURE, texture, name);
+        DebugUtils::SetObjectName(GL_TEXTURE, texture, name);
         _textures.emplace_back(texture);
     };
     
     if (!Common::GLTFScene::Initialize(filename, format, imageCallback))
+    {
         return false;
+    }
 
     auto timerEnd = std::chrono::high_resolution_clock::now();
     auto elapsed =
@@ -68,15 +60,15 @@ bool Scene::Initialize(const std::string& filename, Common::VertexFormat format)
 
     //! Create & Bind vertex array object
     glCreateVertexArrays(1, &_vao);
-    _debug.SetObjectName(GL_VERTEX_ARRAY, _vao, "Scene Vertex Array Object");
+    DebugUtils::SetObjectName(GL_VERTEX_ARRAY, _vao, "Scene Vertex Array Object");
     glCreateBuffers(static_cast<GLsizei>(_buffers.size()), _buffers.data());
 
     //! Temporary buffer binding lambda function
     auto bindingBuffer = [&](void* data, size_t num,
                              Common::VertexFormat attribute) {
-        if (static_cast<int>(format & attribute))
+        if (static_cast<bool>(format & attribute))
         {
-            const GLsizei numFloats = static_cast<GLsizei>(
+            const auto numFloats = static_cast<GLsizei>(
                 Common::VertexHelper::GetNumberOfFloats(attribute));
             const GLsizei stride = numFloats * sizeof(float);
             glNamedBufferStorage(_buffers[index], num * stride, data,
@@ -86,7 +78,7 @@ bool Scene::Initialize(const std::string& filename, Common::VertexFormat format)
             glVertexArrayAttribFormat(_vao, index, numFloats, GL_FLOAT,
                                       GL_FALSE, 0);
             glVertexArrayAttribBinding(_vao, index, index);
-            _debug.SetObjectName(GL_BUFFER, _buffers[index],
+            DebugUtils::SetObjectName(GL_BUFFER, _buffers[index],
                                  "Scene Buffer #" + std::to_string(index));
             ++index;
         }
@@ -108,7 +100,7 @@ bool Scene::Initialize(const std::string& filename, Common::VertexFormat format)
     glNamedBufferStorage(_ebo, _indices.size() * sizeof(unsigned int),
                          _indices.data(), GL_MAP_READ_BIT);
     glVertexArrayElementBuffer(_vao, _ebo);
-    _debug.SetObjectName(GL_BUFFER, _ebo, "Scene Element Buffer");
+    DebugUtils::SetObjectName(GL_BUFFER, _ebo, "Scene Element Buffer");
 
     //! Create shader storage buffer object for matrices of scene nodes
     const size_t numMatrices = std::count_if(
@@ -120,7 +112,7 @@ bool Scene::Initialize(const std::string& filename, Common::VertexFormat format)
                  nullptr, GL_STATIC_COPY);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, _matrixBuffer);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-    _debug.SetObjectName(GL_BUFFER, _matrixBuffer, "Scene Instance Buffer");
+    DebugUtils::SetObjectName(GL_BUFFER, _matrixBuffer, "Scene Instance Buffer");
 
     //! Initialize matrix buffer contents
     UpdateMatrixBuffer();
@@ -150,7 +142,8 @@ bool Scene::Initialize(const std::string& filename, Common::VertexFormat format)
               material.normalTextureScale,
               material.occlusionTexture,
               material.occlusionTextureStrength,
-              material.shadingModel });
+              material.shadingModel,
+              0, 0 /* for padding */ });
     }
     glGenBuffers(1, &_materialBuffer);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _materialBuffer);
@@ -159,7 +152,7 @@ bool Scene::Initialize(const std::string& filename, Common::VertexFormat format)
                  GL_STATIC_COPY);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, _materialBuffer);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-    _debug.SetObjectName(GL_BUFFER, _materialBuffer, "Scene Material Buffer");
+    DebugUtils::SetObjectName(GL_BUFFER, _materialBuffer, "Scene Material Buffer");
 
     //! After uploading all required vertex data, We can release them to free
     ReleaseSourceData();
@@ -173,7 +166,9 @@ void Scene::Update(double dt)
 
     //! If the scene is modified, update the matrix buffer
     if (sceneModified)
+    {
         UpdateMatrixBuffer();
+    }
 
     _timeElapsed += dt;
 }
@@ -192,17 +187,20 @@ void Scene::Render(const std::shared_ptr<Shader>& shader,
     {
         auto textureScope = _debug.ScopeLabel("Scene Texture Binding");
         for (int i = 0; i < static_cast<int>(_textures.size()); ++i)
+        {
             glBindTextureUnit(i + 3, _textures[i]);
+        }
     }
 
-    int lastMaterialIdx = -1, instanceIdx = 0;
-    for (auto& node : _sceneNodes)
+    int lastMaterialIdx = -1;
+    int instanceIdx = 0;
+    for (const auto& node : _sceneNodes)
     {
         shader->SendUniformVariable("instanceIdx", instanceIdx);
 
         for (size_t meshIdx : node.primMeshes)
         {
-            auto& primMesh = _scenePrimMeshes[meshIdx];
+            const auto& primMesh = _scenePrimMeshes[meshIdx];
             if (primMesh.materialIndex != lastMaterialIdx)
             {
                 auto materialScope = _debug.ScopeLabel(
@@ -254,11 +252,22 @@ void Scene::UpdateMatrixBuffer()
 void Scene::CleanUp()
 {
     glDeleteTextures(static_cast<GLsizei>(_textures.size()), _textures.data());
+    _textures.clear();
+
     glDeleteBuffers(1, &_matrixBuffer);
+    _matrixBuffer = 0;
+
     glDeleteBuffers(1, &_materialBuffer);
+    _materialBuffer = 0;
+
     glDeleteBuffers(static_cast<GLsizei>(_buffers.size()), _buffers.data());
+    _buffers.clear();
+
     glDeleteBuffers(1, &_ebo);
+    _ebo = 0;
+
     glDeleteVertexArrays(1, &_vao);
+    _vao = 0;
 }
 
 size_t Scene::GetNumAnimations() const

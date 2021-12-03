@@ -21,7 +21,7 @@ class PerspectiveCamera : public Camera
     /**
      * @brief Destroy the Perspective Camera object
      */
-    ~PerspectiveCamera();
+    ~PerspectiveCamera() final = default;
 
     /**
      * @brief Set perspective camera properties

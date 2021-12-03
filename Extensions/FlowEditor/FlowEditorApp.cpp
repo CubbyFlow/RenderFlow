@@ -38,7 +38,7 @@ bool FlowEditorApp::OnInitialize(std::shared_ptr<GL3::Window> window, const cxxo
 
 	defaultShader->BindUniformBlock("UBOCamera", 0);
 	defaultShader->BindUniformBlock("UBOScene", 1);
-	_debug.SetObjectName(GL_PROGRAM, defaultShader->GetResourceID(), "Default Program");
+	GL3::DebugUtils::SetObjectName(GL_PROGRAM, defaultShader->GetResourceID(), "Default Program");
 	_shaders.emplace("default", std::move(defaultShader));
 
 	return true;

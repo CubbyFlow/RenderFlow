@@ -4,15 +4,20 @@
 #include <GL3/Window.hpp>
 #include <iostream>
 
+
 namespace
 {
 std::vector<GL3::Window*> gWindowPtrs;
 
 GL3::Window* GetMatchedWindow(GLFWwindow* window)
 {
-    for (auto windowPtr : gWindowPtrs)
+    for (auto* windowPtr : gWindowPtrs)
+    {
         if (window == windowPtr->GetGLFWWindow())
+        {
             return windowPtr;
+        }
+    }
     return nullptr;
 }
 
@@ -45,9 +50,13 @@ Window::~Window()
     for (auto iter = gWindowPtrs.begin(); iter != gWindowPtrs.end();)
     {
         if (this == *iter)
+        {
             iter = gWindowPtrs.erase(iter);
+        }
         else
+        {
             ++iter;
+        }
     }
     CleanUp();
 }
@@ -89,7 +98,7 @@ bool Window::Initialize(const std::string& title, int width, int height,
 
     glfwMakeContextCurrent(this->_window);
 
-    if (gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) == false)
+    if (!static_cast<bool>(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)))
     {
         std::cerr << "[Window:Initialize] Failed to initialize GLAD"
                   << std::endl;
@@ -105,13 +114,15 @@ bool Window::Initialize(const std::string& title, int width, int height,
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback(DebugUtils::DebugLog, nullptr);
     glDebugMessageControl(GL_DEBUG_SOURCE_THIRD_PARTY, GL_DONT_CARE,
-                          GL_DONT_CARE, 0, NULL, true);
+                          GL_DONT_CARE, 0, nullptr,
+                          static_cast<GLboolean>(true));
     glDebugMessageControl(GL_DEBUG_SOURCE_APPLICATION, GL_DONT_CARE,
-                          GL_DONT_CARE, 0, NULL, false);
+                          GL_DONT_CARE, 0, nullptr,
+                          static_cast<GLboolean>(false));
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_LOW, 0,
-                          NULL, false);
+                          nullptr, static_cast<GLboolean>(false));
     glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 0,
-                          NULL, false);
+                          nullptr, static_cast<GLboolean>(false));
 
     glfwSetInputMode(this->_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(this->_window, ::CursorPosCallback);
@@ -121,11 +132,16 @@ bool Window::Initialize(const std::string& title, int width, int height,
 
 void Window::CleanUp()
 {
-    if (this->_window)
+    if (this->_window != nullptr)
+    {
         glfwDestroyWindow(this->_window);
+        this->_window = nullptr;
+    }
     //! If there is no more glfw window, cleanup context too.
     if (gWindowPtrs.empty())
+    {
         glfwTerminate();
+    }
 }
 
 GLFWwindow* Window::GetGLFWWindow()
@@ -142,24 +158,32 @@ glm::ivec2 Window::GetWindowExtent() const
 void Window::ProcessInput() const
 {
     for (unsigned int key = GLFW_KEY_SPACE; key <= GLFW_KEY_LAST; ++key)
+    {
         if (glfwGetKey(_window, key) == GLFW_PRESS)
         {
-            for (auto& callback : _keyCallbacks)
+            for (const auto& callback : _keyCallbacks)
+            {
                 callback(key);
+            }
         }
+    }
 }
 
 void Window::ProcessCursorPos(double xpos, double ypos) const
 {
-    for (auto& callback : _cursorPosCallbacks)
+    for (const auto& callback : _cursorPosCallbacks)
+    {
         callback(xpos, ypos);
+    }
 }
 
 void Window::ProcessResize(int width, int height)
 {
     _windowExtent = glm::ivec2(width, height);
     for (auto& callback : _resizeCallbacks)
+    {
         callback(width, height);
+    }
 }
 
 void Window::operator+=(const KeyCallback& callback)

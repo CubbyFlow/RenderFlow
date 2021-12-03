@@ -19,7 +19,7 @@ class BoundingBox
     /**
      * @brief Destroy the Bounding Box object
      */
-    ~BoundingBox();
+    ~BoundingBox() = default;
 
     /**
      * @brief Default copy constructor
@@ -37,7 +37,7 @@ class BoundingBox
     /**
      * @brief Merge the new vec3 point
      */
-    void Merge(const glm::vec3 newPoint);
+    void Merge(glm::vec3 newPoint);
 
     /**
      * @brief Merge the bounding box

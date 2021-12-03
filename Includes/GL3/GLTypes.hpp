@@ -2,44 +2,44 @@
 #define GL_TYPES_HPP
 
 #include <KHR/khrplatform.h>
-typedef unsigned int GLenum;
-typedef unsigned char GLboolean;
-typedef unsigned int GLbitfield;
-typedef void GLvoid;
-typedef khronos_int8_t GLbyte;
-typedef khronos_uint8_t GLubyte;
-typedef khronos_int16_t GLshort;
-typedef khronos_uint16_t GLushort;
-typedef int GLint;
-typedef unsigned int GLuint;
-typedef khronos_int32_t GLclampx;
-typedef int GLsizei;
-typedef khronos_float_t GLfloat;
-typedef khronos_float_t GLclampf;
-typedef double GLdouble;
-typedef double GLclampd;
-typedef void* GLeglClientBufferEXT;
-typedef void* GLeglImageOES;
-typedef char GLchar;
-typedef char GLcharARB;
+using GLenum = unsigned int;
+using GLboolean = unsigned char;
+using GLbitfield = unsigned int;
+using GLvoid = void;
+using GLbyte = khronos_int8_t;
+using GLubyte = khronos_uint8_t;
+using GLshort = khronos_int16_t;
+using GLushort = khronos_uint16_t;
+using GLint = int;
+using GLuint = unsigned int;
+using GLclampx = khronos_int32_t;
+using GLsizei = int;
+using GLfloat = khronos_float_t;
+using GLclampf = khronos_float_t;
+using GLdouble = double;
+using GLclampd = double;
+using GLeglClientBufferEXT = void*;
+using GLeglImageOES = void*;
+using GLchar = char;
+using GLcharARB = char;
 #ifdef __APPLE__
-typedef void* GLhandleARB;
+using GLhandleARB = void*;
 #else
-typedef unsigned int GLhandleARB;
+using GLhandleARB = unsigned int;
 #endif
-typedef khronos_uint16_t GLhalf;
-typedef khronos_uint16_t GLhalfARB;
-typedef khronos_int32_t GLfixed;
-typedef khronos_intptr_t GLintptr;
-typedef khronos_intptr_t GLintptrARB;
-typedef khronos_ssize_t GLsizeiptr;
-typedef khronos_ssize_t GLsizeiptrARB;
-typedef khronos_int64_t GLint64;
-typedef khronos_int64_t GLint64EXT;
-typedef khronos_uint64_t GLuint64;
-typedef khronos_uint64_t GLuint64EXT;
-typedef struct __GLsync* GLsync;
-typedef unsigned short GLhalfNV;
-typedef GLintptr GLvdpauSurfaceNV;
+using GLhalf = khronos_uint16_t;
+using GLhalfARB = khronos_uint16_t;
+using GLfixed = khronos_int32_t;
+using GLintptr = khronos_intptr_t;
+using GLintptrARB = khronos_intptr_t;
+using GLsizeiptr = khronos_ssize_t;
+using GLsizeiptrARB = khronos_ssize_t;
+using GLint64 = khronos_int64_t;
+using GLint64EXT = khronos_int64_t;
+using GLuint64 = khronos_uint64_t;
+using GLuint64EXT = khronos_uint64_t;
+using GLsync = struct __GLsync*;
+using GLhalfNV = unsigned short;
+using GLvdpauSurfaceNV = GLintptr;
 
 #endif  //! end of GLTypes.hpp

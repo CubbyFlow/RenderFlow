@@ -3,6 +3,7 @@
 #include <Common/Macros.hpp>
 #include <GL3/Shader.hpp>
 #include <GL3/SkyDome.hpp>
+#include <array>
 #include <chrono>
 #include <cmath>
 #include <glm/gtc/constants.hpp>
@@ -13,11 +14,6 @@
 
 namespace GL3
 {
-SkyDome::SkyDome()
-{
-    //! Do nothing
-}
-
 SkyDome::~SkyDome()
 {
     CleanUp();
@@ -26,13 +22,13 @@ SkyDome::~SkyDome()
 bool SkyDome::Initialize(const std::string& envPath)
 {
     std::cout << "Loading Environment Map : " << envPath << '\n';
-    int width, height, channels;
+    int width;
+    int height;
+    int channels;
     float* pixels =
         Common::AssetLoader::LoadImageFile(envPath, &width, &height, &channels);
 
-    if (pixels == nullptr)
-        return false;
-    else
+    if (pixels != nullptr)
     {
         glCreateTextures(GL_TEXTURE_2D, 1, &_textureSet.hdrTexture);
         glTextureParameteri(_textureSet.hdrTexture, GL_TEXTURE_WRAP_S,
@@ -63,19 +59,25 @@ bool SkyDome::Initialize(const std::string& envPath)
 
         Common::AssetLoader::FreeImage(pixels);
     }
+    else
+    {
+        return false;
+    }
 
     if (_vao == 0)
+    {
         CreateCube();
+    }
 
     IntegrateBRDF(512);
     PrefilterDiffuse(128);
     PrefilterGlossy(512);
 
-    _debug.SetObjectName(GL_TEXTURE, _textureSet.hdrTexture, "SkyHdr");
-    _debug.SetObjectName(GL_TEXTURE, _textureSet.accelTexture, "SkyImpSamp");
-    _debug.SetObjectName(GL_TEXTURE, _textureSet.brdfLUT, "SkyLut");
-    _debug.SetObjectName(GL_TEXTURE, _textureSet.prefilteredCube, "SkyGlossy");
-    _debug.SetObjectName(GL_TEXTURE, _textureSet.irradianceCube,
+    DebugUtils::SetObjectName(GL_TEXTURE, _textureSet.hdrTexture, "SkyHdr");
+    DebugUtils::SetObjectName(GL_TEXTURE, _textureSet.accelTexture, "SkyImpSamp");
+    DebugUtils::SetObjectName(GL_TEXTURE, _textureSet.brdfLUT, "SkyLut");
+    DebugUtils::SetObjectName(GL_TEXTURE, _textureSet.prefilteredCube, "SkyGlossy");
+    DebugUtils::SetObjectName(GL_TEXTURE, _textureSet.irradianceCube,
                          "SkyIrradiance");
 
     return true;
@@ -104,19 +106,30 @@ const SkyDome::IBLTextureSet& SkyDome::GetIBLTextureSet() const
 void SkyDome::CleanUp()
 {
     glDeleteTextures(5, reinterpret_cast<GLuint*>(&_textureSet));
-    if (_vbo)
+    if (_vbo != 0)
+    {
         glDeleteBuffers(1, &_vbo);
-    if (_ebo)
+        _vbo = 0;
+    }
+    if (_ebo != 0)
+    {
         glDeleteBuffers(1, &_ebo);
-    if (_vao)
+        _ebo = 0;
+    }
+    if (_vao != 0)
+    {
         glDeleteVertexArrays(1, &_vao);
+        _vao = 0;
+    }
 }
 
 void SkyDome::CreateCube()
 {
     //! Already cube is initialized
     if (_vao != 0)
+    {
         return;
+    }
 
     std::vector<glm::vec3> vertexBuffer = {
         { -0.5f, -0.5f, 0.5f }, { 0.5f, -0.5f, 0.5f },   { -0.5f, 0.5f, 0.5f },
@@ -147,18 +160,20 @@ void SkyDome::CreateCube()
                          indexBuffer.data(), GL_MAP_READ_BIT);
     glVertexArrayElementBuffer(_vao, _ebo);
 
-    _debug.SetObjectName(GL_VERTEX_ARRAY, _vao, "SkyDome Cube Vertex Array");
-    _debug.SetObjectName(GL_BUFFER, _vbo, "SkyDome Cube Vertex Buffer");
-    _debug.SetObjectName(GL_BUFFER, _ebo, "SkyDome Cube Element Buffer");
+    DebugUtils::SetObjectName(GL_VERTEX_ARRAY, _vao, "SkyDome Cube Vertex Array");
+    DebugUtils::SetObjectName(GL_BUFFER, _vbo, "SkyDome Cube Vertex Buffer");
+    DebugUtils::SetObjectName(GL_BUFFER, _ebo, "SkyDome Cube Element Buffer");
 }
 
 void SkyDome::RenderToCube(GLuint fbo, GLuint texture, Shader* shader,
                            unsigned int dim, const unsigned int numMips)
 {
     if (_vao == 0)
+    {
         CreateCube();
+    }
 
-    glm::mat4 mv[6];
+    std::array<glm::mat4, 6> mv;
     const glm::vec3 pos(0.0f, 0.0f, 0.0f);
     mv[0] = glm::lookAt(pos, glm::vec3(1.0f, 0.0f, 0.0f),
                         glm::vec3(0.0f, -1.0f, 0.0f));  // Positive X
@@ -371,27 +386,35 @@ struct EnvAccel
 float BuildAliasMap(const std::vector<float>& data,
                     std::vector<EnvAccel>& accel)
 {
-    unsigned int size = static_cast<unsigned int>(data.size());
+    auto size = static_cast<unsigned int>(data.size());
     //! Create qs (normalized)
     float sum = 0.0f;
     for (float d : data)
+    {
         sum += d;
+    }
 
-    float fsize = static_cast<float>(data.size());
+    auto fsize = static_cast<float>(data.size());
     for (unsigned int i = 0; i < data.size(); ++i)
+    {
         accel[i].q = fsize * data[i] / sum;
+    }
 
     //! Create partition table
     std::vector<unsigned int> partitionTable(size);
-    unsigned int s = 0u, large = size;
+    unsigned int s = 0u;
+    unsigned int large = size;
     for (unsigned int i = 0; i < size; ++i)
+    {
         partitionTable[(accel[i].q < 1.0f) ? (s++) : (--large)] =
             accel[i].alias = i;
+    }
 
     //! Create Alias map
     for (s = 0; s < large && large < size; ++s)
     {
-        const unsigned int j = partitionTable[s], k = partitionTable[large];
+        const unsigned int j = partitionTable[s];
+        const unsigned int k = partitionTable[large];
         accel[j].alias = k;
         accel[k].q += accel[j].q - 1.0f;
         large = (accel[k].q < 1.0f) ? (large + 1u) : large;

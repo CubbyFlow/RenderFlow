@@ -5,17 +5,13 @@
 #include <GL3/PostProcessing.hpp>
 #include <GL3/Renderer.hpp>
 #include <GL3/Window.hpp>
+#include <array>
 
-static const float kClearColor[] = { 0.81f, 0.81f, 0.81f, 1.0f };
+static const std::array<float, 4> kClearColor = { 0.81f, 0.81f, 0.81f, 1.0f };
 
 namespace GL3
 {
 Renderer::Renderer() : _queryID(0), _bMeasureGPUTime(false)
-{
-    //! Do nothing
-}
-
-Renderer::~Renderer()
 {
     //! Do nothing
 }
@@ -28,39 +24,45 @@ bool Renderer::Initialize(const cxxopts::ParseResult& configure)
     if (!_mainWindow->Initialize(configure["title"].as<std::string>(),
                                  configure["width"].as<int>(),
                                  configure["height"].as<int>()))
+    {
         return false;
+    }
 
     //! Pass the Renderer input handling method to window.
     using namespace std::placeholders;
-    std::function<void(unsigned int)> inputCallback =
-        std::bind(&Renderer::ProcessInput, this, _1);
-    std::function<void(double, double)> cursorCallback =
-        std::bind(&Renderer::ProcessCursorPos, this, _1, _2);
-    std::function<void(int, int)> resizeCallback =
-        std::bind(&Renderer::ProcessResize, this, _1, _2);
+    std::function<void(unsigned int)> inputCallback = [this](unsigned int key) {
+        this->ProcessInput(key);
+    };
+    std::function<void(double, double)> cursorCallback = [this](double x, double y) {
+        this->ProcessCursorPos(x, y);
+    };
+    std::function<void(int, int)> resizeCallback = [this](int width, int height) {
+        this->ProcessResize(width, height);
+    };
     _mainWindow->operator+=(inputCallback);
     _mainWindow->operator+=(cursorCallback);
     _mainWindow->operator+=(resizeCallback);
 
     _postProcessing = std::make_unique<PostProcessing>();
     if (!_postProcessing->Initialize())
+    {
         return false;
+    }
     _postProcessing->Resize(_mainWindow->GetWindowExtent());
 
     //! Initialize implementation parts
-    if (!OnInitialize(configure))
-        return false;
-
-    return true;
+    return OnInitialize(configure);
 }
 
-bool Renderer::AddApplication(std::shared_ptr<Application> app,
+bool Renderer::AddApplication(const std::shared_ptr<Application>& app,
                               const cxxopts::ParseResult& configure)
 {
     //! If this is first application, register it to current application
     //! weak_ptr
     if (_applications.empty())
+    {
         _currentApp = app;
+    }
 
     //! Push new application to the list.
     _applications.push_back(app);
@@ -76,7 +78,7 @@ void Renderer::UpdateFrame(double dt)
     _mainWindow->ProcessInput();
 
     //! Get current application and it must be valid pointer
-    auto app = GetCurrentApplication();
+    const auto& app = GetCurrentApplication();
     assert(app);
 
     //! Update the current application
@@ -89,7 +91,7 @@ void Renderer::UpdateFrame(double dt)
 void Renderer::DrawFrame()
 {
     //! Get current application and it must be valid pointer
-    auto app = GetCurrentApplication();
+    const std::shared_ptr<GL3::Application>& app = GetCurrentApplication();
     assert(app);
     const glm::ivec2 windowExtent = _mainWindow->GetWindowExtent();
 
@@ -122,7 +124,7 @@ void Renderer::DrawFrame()
     auto scope = _debug.ScopeLabel("Start Rendering");
     glViewport(0, 0, windowExtent.x, windowExtent.y);
     glBindFramebuffer(GL_FRAMEBUFFER, _postProcessing->GetFramebuffer());
-    glClearBufferfv(GL_COLOR, 0, kClearColor);
+    glClearBufferfv(GL_COLOR, 0, kClearColor.data());
     glClearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
     OnBeginDraw();
     app->Draw();
@@ -138,7 +140,9 @@ void Renderer::DrawFrame()
 void Renderer::CleanUp()
 {
     for (auto& app : _applications)
+    {
         app->CleanUp();
+    }
     _applications.clear();
     //! Renderer Implementation CleanUo
     OnCleanUp();
@@ -151,23 +155,27 @@ void Renderer::CleanUp()
 bool Renderer::GetRendererShouldExit() const
 {
     return _applications.empty() ||
-           glfwWindowShouldClose(_mainWindow->GetGLFWWindow());
+           glfwWindowShouldClose(_mainWindow->GetGLFWWindow()) != 0;
 }
 
 void Renderer::BeginGPUMeasure()
 {
-    if (!_queryID)
+    if (_queryID != 0)
+    {
         glGenQueries(1, &_queryID);
+    }
     glBeginQuery(GL_TIME_ELAPSED, _queryID);
 }
 
-size_t Renderer::EndGPUMeasure()
+size_t Renderer::EndGPUMeasure() const
 {
     glEndQuery(GL_TIME_ELAPSED);
 
     GLint done = 0;
-    while (!done)
+    while (done != 0)
+    {
         glGetQueryObjectiv(_queryID, GL_QUERY_RESULT_AVAILABLE, &done);
+    }
 
     GLuint64 elapsed;
     glGetQueryObjectui64v(_queryID, GL_QUERY_RESULT, &elapsed);
@@ -197,7 +205,7 @@ void Renderer::ProcessInput(unsigned int key)
     app->ProcessInput(key);
 }
 
-void Renderer::ProcessCursorPos(double xpos, double ypos)
+void Renderer::ProcessCursorPos(double xpos, double ypos) const
 {
     auto app = GetCurrentApplication();
     assert(app);
@@ -214,7 +222,7 @@ void Renderer::ProcessResize(int width, int height)
     app->ProcessResize(width, height);
 }
 
-void Renderer::SwitchApplication(std::shared_ptr<GL3::Application> app)
+void Renderer::SwitchApplication(const std::shared_ptr<GL3::Application>& app)
 {
     _currentApp = app;
 }
@@ -222,6 +230,8 @@ void Renderer::SwitchApplication(std::shared_ptr<GL3::Application> app)
 void Renderer::SwitchApplication(size_t index)
 {
     if (0 <= index && index < _applications.size())
+    {
         SwitchApplication(_applications[index]);
+    }
 }
 };  // namespace GL3

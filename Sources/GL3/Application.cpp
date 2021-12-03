@@ -9,23 +9,10 @@
 
 namespace GL3
 {
-Application::Application()
-{
-    //! Do nothing
-}
-
-Application::~Application()
-{
-    //! Do nothing
-}
-
 bool Application::Initialize(std::shared_ptr<GL3::Window> window,
                              const cxxopts::ParseResult& configure)
 {
-    if (!OnInitialize(window, configure))
-        return false;
-
-    return true;
+    return OnInitialize(std::move(window), configure);
 }
 
 void Application::AddCamera(std::shared_ptr<Camera>&& camera)
@@ -54,7 +41,9 @@ void Application::CleanUp()
 void Application::ProcessInput(unsigned int key)
 {
     for (auto& camera : _cameras)
+    {
         camera->ProcessInput(key);
+    }
 
     OnProcessInput(key);
 }
@@ -62,7 +51,9 @@ void Application::ProcessInput(unsigned int key)
 void Application::ProcessCursorPos(double xpos, double ypos)
 {
     for (auto& camera : _cameras)
+    {
         camera->ProcessCursorPos(xpos, ypos);
+    }
 }
 
 void Application::ProcessResize(int width, int height)

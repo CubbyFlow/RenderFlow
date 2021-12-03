@@ -7,9 +7,7 @@
 #include <Common/Macros.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-namespace Common
-{
-namespace Interpolation
+namespace Common::Interpolation
 {
 template <typename Type>
 Type Lerp(Type prev, Type next, const float keyframe)
@@ -61,8 +59,6 @@ Type Step(Type prev, Type next, const float keyframe)
     return keyframe >= 1.0 ? next : prev;
 }
 
-}  // namespace Interpolation
-
-};  // namespace Common
+};  // namespace Common::Interpolation
 
 #endif  //! end of MathUtils-Impl.hpp

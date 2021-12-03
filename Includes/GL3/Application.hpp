@@ -25,12 +25,12 @@ class Application
     /**
      * @brief Construct a new Application object
      */
-    Application();
+    Application() = default;
 
     /**
      * @brief Destroy the Application object
      */
-    virtual ~Application();
+    virtual ~Application() = default;
 
     /**
      * @brief Initialize the Application

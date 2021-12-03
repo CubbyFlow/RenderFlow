@@ -26,12 +26,12 @@ class Scene : public Common::GLTFScene
     /**
      * @brief Construct a new Scene object
      */
-    Scene();
+    Scene() = default;
 
     /**
      * @brief Destroy the Scene object
      */
-    ~Scene();
+    ~Scene() = default;
 
     /**
      * @brief Load GLTFScene from the given scene filename and generate buffers

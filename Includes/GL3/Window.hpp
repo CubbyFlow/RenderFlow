@@ -118,15 +118,14 @@ class Window
      */
     [[nodiscard]] float GetAspectRatio() const;
 
- protected:
-    GLFWwindow* _window;
-    std::string _windowTitle;
-    glm::ivec2 _windowExtent;
-
  private:
     std::vector<KeyCallback> _keyCallbacks;
     std::vector<CursorPosCallback> _cursorPosCallbacks;
     std::vector<ResizeCallback> _resizeCallbacks;
+    
+    GLFWwindow* _window;
+    std::string _windowTitle;
+    glm::ivec2 _windowExtent;
 };
 };  // namespace GL3
 

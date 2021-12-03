@@ -31,7 +31,7 @@ bool Camera::SetupUniformBuffer()
                  nullptr, GL_STATIC_COPY);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-    _debug.SetObjectName(GL_BUFFER, _uniformBuffer, "CameraBuffer");
+    DebugUtils::SetObjectName(GL_BUFFER, _uniformBuffer, "CameraBuffer");
     return true;
 }
 
@@ -145,7 +145,10 @@ void Camera::ProcessCursorPos(double xpos, double ypos)
 
 void Camera::CleanUp()
 {
-    if (_uniformBuffer)
+    if (_uniformBuffer != 0)
+    {
         glDeleteBuffers(1, &_uniformBuffer);
+        _uniformBuffer = 0;
+    }
 }
 };  // namespace GL3

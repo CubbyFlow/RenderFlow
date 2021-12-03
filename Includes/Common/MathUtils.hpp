@@ -19,7 +19,7 @@ namespace Interpolation
  * @return Type linear interpolated value
  */
 template <typename Type>
-[[nodiscard]] Type Lerp(Type prev, Type next, const float keyframe);
+[[nodiscard]] Type Lerp(Type prev, Type next, float keyframe);
 
 /**
  * @brief Quaternion slerp interpolation between two quaternions
@@ -30,7 +30,7 @@ template <typename Type>
  * @return Type spherical linear interpolated value
  */
 template <typename Type>
-[[nodiscard]] Type SLerp(Type prev, Type next, const float keyframe);
+[[nodiscard]] Type SLerp(Type prev, Type next, float keyframe);
 
 /**
  * @brief Quaternion slerp interpolation between two quaternions
@@ -41,7 +41,7 @@ template <typename Type>
  * @return Type cubic spline interpolated value
  */
 template <typename Type>
-[[nodiscard]] Type CubicSpline(Type prev, Type next, const float keyframe);
+[[nodiscard]] Type CubicSpline(Type prev, Type next, float keyframe);
 
 /**
  * @brief Returns prev if keyframe is less or equal than keyframe, next
@@ -53,7 +53,7 @@ template <typename Type>
  * @return Type stepwise interpolated value
  */
 template <typename Type>
-[[nodiscard]] Type Step(Type prev, Type next, const float keyframe);
+[[nodiscard]] Type Step(Type prev, Type next, float keyframe);
 };  // namespace Interpolation
 };  // namespace Common
 

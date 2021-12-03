@@ -14,25 +14,17 @@
 
 namespace Common
 {
-GLTFScene::GLTFScene()
-{
-    //! Do nothing
-}
-
-GLTFScene::~GLTFScene()
-{
-    //! Do nothing
-}
-
 bool GLTFScene::Initialize(const std::string& filename, VertexFormat format,
-                           ImageCallback imageCallback)
+                           const ImageCallback& imageCallback)
 {
     assert(static_cast<int>(format & Common::VertexFormat::Position3) &&
            "Scene model must contain Position attribute");
 
     tinygltf::Model model;
     if (!LoadModel(&model, filename))
+    {
         return false;
+    }
 
     for (const auto& extension : model.extensionsRequired)
     {
@@ -44,15 +36,20 @@ bool GLTFScene::Initialize(const std::string& filename, VertexFormat format,
         }
     }
 
-    size_t numVertices{ 0 }, numIndices{ 0 }, primCount{ 0 }, meshCount{ 0 };
+    size_t numVertices{ 0 };
+    size_t numIndices{ 0 };
+    size_t primCount{ 0 };
+    size_t meshCount{ 0 };
+
     for (const auto& mesh : model.meshes)
     {
         std::vector<size_t> vPrim;
         for (const auto& prim : mesh.primitives)
         {
             if (prim.mode != TINYGLTF_MODE_TRIANGLES)
+            {
                 continue;
-
+            }
             const auto& posAccessor =
                 model.accessors[prim.attributes.find("POSITION")->second];
             numVertices += posAccessor.count;
@@ -72,14 +69,22 @@ bool GLTFScene::Initialize(const std::string& filename, VertexFormat format,
 
     _positions.reserve(numVertices);
     _indices.reserve(numIndices);
-    if (static_cast<int>(format & VertexFormat::Normal3))
+    if (static_cast<bool>(format & VertexFormat::Normal3))
+    {
         _normals.reserve(numVertices);
-    if (static_cast<int>(format & VertexFormat::Tangent4))
+    }
+    if (static_cast<bool>(format & VertexFormat::Tangent4))
+    {
         _tangents.reserve(numVertices);
-    if (static_cast<int>(format & VertexFormat::Color4))
+    }
+    if (static_cast<bool>(format & VertexFormat::Color4))
+    {
         _colors.reserve(numVertices);
-    if (static_cast<int>(format & VertexFormat::TexCoord2))
+    }
+    if (static_cast<bool>(format & VertexFormat::TexCoord2))
+    {
         _texCoords.reserve(numVertices);
+    }
 
     //! Convert all mesh/primitves+ to a single primitive per mesh.
     for (const auto& mesh : model.meshes)
@@ -123,7 +128,9 @@ bool GLTFScene::Initialize(const std::string& filename, VertexFormat format,
     if (imageCallback != nullptr)
     {
         for (const auto& image : model.images)
+        {
             imageCallback(image);
+        }
     }
 
     return true;
@@ -141,7 +148,9 @@ void GLTFScene::ProcessMesh(const tinygltf::Model& model,
 
     //! Only triangles supported.
     if (mesh.mode != TINYGLTF_MODE_TRIANGLES)
+    {
         return;
+    }
 
     //! Indices
     if (mesh.indices > -1)
@@ -197,7 +206,9 @@ void GLTFScene::ProcessMesh(const tinygltf::Model& model,
         const auto& accessor =
             model.accessors[mesh.attributes.find("POSITION")->second];
         for (unsigned int i = 0; i < accessor.count; ++i)
+        {
             _indices.push_back(i);
+        }
         resultMesh.indexCount = static_cast<unsigned int>(accessor.count);
     }
 
@@ -211,18 +222,22 @@ void GLTFScene::ProcessMesh(const tinygltf::Model& model,
         const auto& accessor =
             model.accessors[mesh.attributes.find("POSITION")->second];
         resultMesh.vertexCount = static_cast<unsigned int>(accessor.count);
-        if (accessor.minValues.empty() == false)
+        if (!accessor.minValues.empty())
+        {
             resultMesh.min =
                 glm::vec3(accessor.minValues[0], accessor.minValues[1],
                           accessor.minValues[2]);
-        if (accessor.maxValues.empty() == false)
+        }
+        if (!accessor.maxValues.empty())
+        {
             resultMesh.max =
                 glm::vec3(accessor.maxValues[0], accessor.maxValues[1],
                           accessor.maxValues[2]);
+        }
     }
 
     //! NORMAL
-    if (static_cast<int>(format & VertexFormat::Normal3))
+    if (static_cast<bool>(format & VertexFormat::Normal3))
     {
         if (!GetAttributes<glm::vec3>(model, mesh, _normals, "NORMAL"))
         {
@@ -251,7 +266,7 @@ void GLTFScene::ProcessMesh(const tinygltf::Model& model,
     }
 
     //! TEXCOORD2
-    if (static_cast<int>(format & VertexFormat::TexCoord2))
+    if (static_cast<bool>(format & VertexFormat::TexCoord2))
     {
         if (!GetAttributes<glm::vec2>(model, mesh, _texCoords, "TEXCOORD_0"))
         {
@@ -263,11 +278,13 @@ void GLTFScene::ProcessMesh(const tinygltf::Model& model,
                 float absY = std::fabs(pos.y);
                 float absZ = std::fabs(pos.z);
 
-                int isXPositive = pos.x > 0.0f ? 1 : 0;
-                int isYPositive = pos.y > 0.0f ? 1 : 0;
-                int isZPositive = pos.z > 0.0f ? 1 : 0;
+                bool isXPositive = pos.x > 0.0f;
+                bool isYPositive = pos.y > 0.0f;
+                bool isZPositive = pos.z > 0.0f;
 
-                float mapAxis{ 0.0f }, uc{ 0.0f }, vc{ 0.0f };
+                float mapAxis{ 0.0f };
+                float uc{ 0.0f };
+                float vc{ 0.0f };
                 //! Positive X
                 if (isXPositive && absX >= absY && absX >= absZ)
                 {
@@ -327,13 +344,13 @@ void GLTFScene::ProcessMesh(const tinygltf::Model& model,
                 float u = (uc / mapAxis + 1.0f) * 0.5f;
                 float v = (vc / mapAxis + 1.0f) * 0.5f;
 
-                _texCoords.push_back(glm::vec2(u, v));
+                _texCoords.emplace_back(u, v);
             }
         }
     }
 
     //! TANGENT
-    if (static_cast<int>(format & VertexFormat::Tangent4))
+    if (static_cast<bool>(format & VertexFormat::Tangent4))
     {
         if (!GetAttributes(model, mesh, _tangents, "TANGENT"))
         {
@@ -362,9 +379,12 @@ void GLTFScene::ProcessMesh(const tinygltf::Model& model,
                 const auto& uv1 = _texCoords[gidx1];
                 const auto& uv2 = _texCoords[gidx2];
 
-                glm::vec3 e1 = pos1 - pos0, e2 = pos2 - pos0;
-                float x1 = uv1.x - uv0.x, x2 = uv2.x - uv0.x;
-                float y1 = uv1.y - uv0.y, y2 = uv2.y - uv0.y;
+                glm::vec3 e1 = pos1 - pos0;
+                glm::vec3 e2 = pos2 - pos0;
+                float x1 = uv1.x - uv0.x;
+                float x2 = uv2.x - uv0.x;
+                float y1 = uv1.y - uv0.y;
+                float y2 = uv2.y - uv0.y;
 
                 const float r = 1.0f / (x1 * y2 - x2 * y1);
                 glm::vec3 tangent = (e1 * y2 - e2 * y1) * r;
@@ -379,11 +399,15 @@ void GLTFScene::ProcessMesh(const tinygltf::Model& model,
                     const auto N = (nrm0 + nrm1 + nrm2) / glm::vec3(3.0f);
 
                     if (std::abs(N.x) > std::abs(N.y))
+                    {
                         tangent = glm::vec3(N.z, 0, -N.x) /
                                   std::sqrt(N.x * N.x + N.z * N.z);
+                    }
                     else
+                    {
                         tangent = glm::vec3(0, -N.z, N.y) /
                                   std::sqrt(N.y * N.y + N.z * N.z);
+                    }
                     bitangent = glm::cross(N, tangent);
                 }
 
@@ -414,7 +438,7 @@ void GLTFScene::ProcessMesh(const tinygltf::Model& model,
     }
 
     //! COLOR
-    if (static_cast<int>(format & VertexFormat::Color4))
+    if (static_cast<bool>(format & VertexFormat::Color4))
     {
         if (!GetAttributes(model, mesh, _colors, "COLOR_0"))
         {
@@ -429,14 +453,19 @@ void GLTFScene::ProcessMesh(const tinygltf::Model& model,
 bool GLTFScene::LoadModel(tinygltf::Model* model, const std::string& filename)
 {
     tinygltf::TinyGLTF loader;
-    std::string err, warn;
+    std::string err;
+    std::string warn;
 
     bool res = loader.LoadBinaryFromFile(model, &err, &warn, filename);
     if (!res)
+    {
         res = loader.LoadASCIIFromFile(model, &err, &warn, filename);
+    }
 
     if (!res)
+    {
         std::cerr << "Failed to load GLTF model : " << filename << std::endl;
+    }
 
     return res;
 }
@@ -448,19 +477,27 @@ void GLTFScene::ProcessNode(const tinygltf::Model& model, int nodeIdx,
 
     GLTFNode newNode;
     //! Gets transformation info from the given node
-    if (node.translation.empty() == false)
+    if (!node.translation.empty())
+    {
         newNode.translation = glm::vec3(
             node.translation[0], node.translation[1], node.translation[2]);
-    if (node.scale.empty() == false)
+    }
+    if (!node.scale.empty())
+    {
         newNode.scale = glm::vec3(node.scale[0], node.scale[1], node.scale[2]);
-    if (node.rotation.empty() == false)
+    }
+    if (!node.rotation.empty())
+    {
         newNode.rotation = glm::dquat(node.rotation[3], node.rotation[0],
                                       node.rotation[1], node.rotation[2]);
-    if (node.matrix.empty() == false)
+    }
+    if (!node.matrix.empty())
     {
         float* nodeMatPtr = glm::value_ptr(newNode.local);
         for (int i = 0; i < 16; ++i)
+        {
             nodeMatPtr[i] = static_cast<float>(node.matrix[i]);
+        }
     }
 
     //! Calculate world matrix
@@ -477,22 +514,29 @@ void GLTFScene::ProcessNode(const tinygltf::Model& model, int nodeIdx,
         //! If the node has the Iray extension, extract the camera information
         if (node.extensions.find("NV_attributes_iray") != node.extensions.end())
         {
-            auto& iray_ext = node.extensions.find("NV_attributes_iray")->second;
-            auto& attributes = iray_ext.Get("attributes");
+            const auto& iray_ext =
+                node.extensions.find("NV_attributes_iray")->second;
+            const auto& attributes = iray_ext.Get("attributes");
             for (size_t idx = 0; idx < attributes.ArrayLen(); ++idx)
             {
-                auto& attrib = attributes.Get(static_cast<int>(idx));
+                const auto& attrib = attributes.Get(static_cast<int>(idx));
                 std::string attName = attrib.Get("name").Get<std::string>();
-                auto& attValue = attrib.Get("value");
+                const auto& attValue = attrib.Get("value");
                 if (attValue.IsArray())
                 {
                     auto vec = GetVector<float>(attValue);
                     if (attName == "ivew:position")
+                    {
                         camera.eye = { vec[0], vec[1], vec[2] };
+                    }
                     else if (attName == "iview:interest")
+                    {
                         camera.center = { vec[0], vec[1], vec[2] };
+                    }
                     else if (attName == "iview:up")
+                    {
                         camera.up = { vec[0], vec[1], vec[2] };
+                    }
                 }
             }
         }
@@ -513,9 +557,11 @@ void GLTFScene::ProcessNode(const tinygltf::Model& model, int nodeIdx,
     else
     {
         if (node.mesh > -1)
+        {
             newNode.primMeshes = std::move(_meshToPrimMap[node.mesh]);
+        }
 
-        newNode.world = std::move(worldMat);
+        newNode.world = worldMat;
         newNode.nodeIndex = nodeIdx;
         newNode.parentNode = parentIndex;
 
@@ -523,11 +569,15 @@ void GLTFScene::ProcessNode(const tinygltf::Model& model, int nodeIdx,
         const size_t newNodeIndex = _sceneNodes.size();
         _sceneNodes.emplace_back(std::move(newNode));
         if (parentIndex != -1)
+        {
             _sceneNodes[parentIndex].childNodes.push_back(newNodeIndex);
+        }
 
         //! Call ProcessNode recursively to the childs of this newNode
         for (int child : node.children)
+        {
             ProcessNode(model, child, static_cast<int>(newNodeIndex));
+        }
     }
 }
 
@@ -546,14 +596,18 @@ void GLTFScene::UpdateNode(size_t nodeIndex)
     }
 
     for (size_t child : node.childNodes)
+    {
         UpdateNode(child);
+    }
 }
 
 bool GLTFScene::UpdateAnimation(size_t animIndex, double timeElapsed)
 {
     //! There is no animation corresponded to given index, therefore return.
     if (_sceneAnims.size() <= animIndex)
+    {
         return false;
+    }
 
     bool sceneModified = false;
     const auto& anim = _sceneAnims[animIndex];
@@ -563,11 +617,13 @@ bool GLTFScene::UpdateAnimation(size_t animIndex, double timeElapsed)
     double maxAnimInterval = 0.0;
     for (size_t s = anim.samplerIndex;
          s < anim.samplerIndex + anim.samplerCount; ++s)
+    {
         maxAnimInterval =
             std::max(maxAnimInterval,
                      static_cast<double>(_sceneSamplers[s].inputs.back()));
+    }
     //! Calculate timeElapsed modulo max interval
-    const float elapsed =
+    const auto elapsed =
         static_cast<float>(std::fmod(timeElapsed, maxAnimInterval));
 
     for (size_t ch = anim.channelIndex;
@@ -626,7 +682,9 @@ bool GLTFScene::UpdateAnimation(size_t animIndex, double timeElapsed)
     if (sceneModified)
     {
         for (size_t i = 0; i < _sceneNodes.size(); ++i)
+        {
             UpdateNode(i);
+        }
     }
 
     return sceneModified;
@@ -645,10 +703,14 @@ void GLTFScene::ProcessAnimation(const tinygltf::Model& model,
     animation.samplerCount = static_cast<int>(anim.samplers.size());
 
     for (const auto& channel : anim.channels)
+    {
         ProcessChannel(channel);
+    }
 
     for (const auto& sampler : anim.samplers)
+    {
         ProcessSampler(model, sampler);
+    }
 
     _sceneAnims.emplace_back(std::move(animation));
 }
@@ -659,17 +721,29 @@ void GLTFScene::ProcessChannel(const tinygltf::AnimationChannel& channel)
     newChannel.samplerIndex = channel.sampler;
     //! Remapping gltf::channel::node_index to our node index
     for (int i = 0; i < static_cast<int>(_sceneNodes.size()); ++i)
+    {
         if (_sceneNodes[i].nodeIndex == channel.target_node)
+        {
             newChannel.nodeIndex = i;
+        }
+    }
     //! Assign matched channel path by comparing target_path string
     if (channel.target_path == "translation")
+    {
         newChannel.path = GLTFChannel::Path::Translation;
+    }
     else if (channel.target_path == "scale")
+    {
         newChannel.path = GLTFChannel::Path::Scale;
+    }
     else if (channel.target_path == "rotation")
+    {
         newChannel.path = GLTFChannel::Path::Rotation;
+    }
     else if (channel.target_path == "weights")
+    {
         newChannel.path = GLTFChannel::Path::Weights;
+    }
     else
     {
         //! Unknown gltf channel target path.
@@ -679,7 +753,7 @@ void GLTFScene::ProcessChannel(const tinygltf::AnimationChannel& channel)
         return;
     }
 
-    _sceneChannels.emplace_back(std::move(newChannel));
+    _sceneChannels.emplace_back(newChannel);
 }
 
 void GLTFScene::ProcessSampler(const tinygltf::Model& model,
@@ -688,11 +762,17 @@ void GLTFScene::ProcessSampler(const tinygltf::Model& model,
     GLTFSampler newSampler;
     //! Assign sampler interpolation method by comparing interpolation string
     if (sampler.interpolation == "LINEAR")
+    {
         newSampler.interpolation = GLTFSampler::Interpolation::Linear;
+    }
     else if (sampler.interpolation == "STEP")
+    {
         newSampler.interpolation = GLTFSampler::Interpolation::Step;
+    }
     else if (sampler.interpolation == "CUBICSPLINE")
+    {
         newSampler.interpolation = GLTFSampler::Interpolation::Cubicspline;
+    }
     else
     {
         //! Unknown gltf sampler interpolation method
@@ -714,9 +794,11 @@ void GLTFScene::ProcessSampler(const tinygltf::Model& model,
         const void* dataPtr =
             &buffer.data[accessor.byteOffset + bufferView.byteOffset];
 
-        const float* buf = static_cast<const float*>(dataPtr);
+        const auto* buf = static_cast<const float*>(dataPtr);
         for (size_t i = 0; i < accessor.count; ++i)
+        {
             newSampler.inputs.push_back(buf[i]);
+        }
     }
 
     //! Process sampler outputs
@@ -733,22 +815,27 @@ void GLTFScene::ProcessSampler(const tinygltf::Model& model,
 
         if (accessor.type == TINYGLTF_TYPE_SCALAR)
         {
-            const float* buf = static_cast<const float*>(dataPtr);
+            const auto* buf = static_cast<const float*>(dataPtr);
             for (size_t i = 0; i < accessor.count; ++i)
-                newSampler.outputs.push_back(
-                    glm::vec4(buf[i], glm::vec3(0.0f)));
+            {
+                newSampler.outputs.emplace_back(buf[i], glm::vec3(0.0f));
+            }
         }
         else if (accessor.type == TINYGLTF_TYPE_VEC3)
         {
-            const glm::vec3* buf = static_cast<const glm::vec3*>(dataPtr);
+            const auto* buf = static_cast<const glm::vec3*>(dataPtr);
             for (size_t i = 0; i < accessor.count; ++i)
-                newSampler.outputs.push_back(glm::vec4(buf[i], 1.0));
+            {
+                newSampler.outputs.emplace_back(buf[i], 1.0);
+            }
         }
         else if (accessor.type == TINYGLTF_TYPE_VEC4)
         {
-            const glm::vec4* buf = static_cast<const glm::vec4*>(dataPtr);
+            const auto* buf = static_cast<const glm::vec4*>(dataPtr);
             for (size_t i = 0; i < accessor.count; ++i)
+            {
                 newSampler.outputs.push_back(buf[i]);
+            }
         }
         else
         {
@@ -844,7 +931,7 @@ void GLTFScene::ImportMaterials(const tinygltf::Model& model)
             static_cast<float>(mat.occlusionTexture.strength);
 
         //! PBR Metallic roughness
-        auto& pbr = mat.pbrMetallicRoughness;
+        const auto& pbr = mat.pbrMetallicRoughness;
         material.baseColorFactor =
             glm::vec4(pbr.baseColorFactor[0], pbr.baseColorFactor[1],
                       pbr.baseColorFactor[2], pbr.baseColorFactor[3]);

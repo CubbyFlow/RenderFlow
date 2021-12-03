@@ -1,6 +1,7 @@
 #include <Common/AssetLoader.hpp>
 #include <GL3/DebugUtils.hpp>
 #include <algorithm>
+#include <array>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
@@ -18,7 +19,9 @@ glm::vec3 CalculateNormal(const glm::vec3 v1, const glm::vec3 v2,
                           const glm::vec3 v3)
 {
     if (!CheckTriangle(v1, v2, v3))
+    {
         return glm::vec3(0.0f);
+    }
 
     glm::vec3 edge1 = v2 - v1;
     glm::vec3 edge2 = v3 - v2;
@@ -67,11 +70,12 @@ bool AssetLoader::LoadObjFile(const std::string& path,
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
-    std::string warn, err;
+    std::string warn;
+    std::string err;
 
     //! Load obj file with tinyobjloader
-    bool ret =
-        tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str());
+    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err,
+                                path.c_str());
     if (!ret)
     {
         std::cerr << "[AssetLoader:LoadObjFile] Failed to load " << path
@@ -79,7 +83,7 @@ bool AssetLoader::LoadObjFile(const std::string& path,
         GL3::DebugUtils::PrintStack();
         return false;
     }
-    if (shapes.size() == 0)
+    if (shapes.empty())
     {
         std::cerr << "[AssetLoader:LoadObjFile] No shapes in " << path
                   << std::endl;
@@ -109,9 +113,9 @@ bool AssetLoader::LoadObjFile(const std::string& path,
             tinyobj::index_t idx1 = shape.mesh.indices[3 * faceIndex + 1];
             tinyobj::index_t idx2 = shape.mesh.indices[3 * faceIndex + 2];
 
-            glm::vec3 position[3];
-            glm::vec2 texCoord[3];
-            glm::vec3 normal[3];
+            std::array<glm::vec3, 3> position;
+            std::array<glm::vec2, 3> texCoord;
+            std::array<glm::vec3, 3> normal;
 
             if (static_cast<int>(format & Common::VertexFormat::Position3))
             {
@@ -131,7 +135,7 @@ bool AssetLoader::LoadObjFile(const std::string& path,
             if (static_cast<int>(format & Common::VertexFormat::Normal3))
             {
                 bool invalidNormal = false;
-                if (attrib.normals.size() > 0)
+                if (!attrib.normals.empty())
                 {
                     int f0 = idx0.normal_index;
                     int f1 = idx1.normal_index;
@@ -168,7 +172,7 @@ bool AssetLoader::LoadObjFile(const std::string& path,
 
             if (static_cast<int>(format & Common::VertexFormat::TexCoord2))
             {
-                if (attrib.texcoords.size() > 0)
+                if (!attrib.texcoords.empty())
                 {
                     int f0 = idx0.texcoord_index;
                     int f1 = idx1.texcoord_index;
@@ -229,7 +233,7 @@ bool AssetLoader::LoadObjFile(const std::string& path,
                                          Common::VertexFormat::TexCoord2))
                         vertices.insert(vertices.end(),
                                         { texCoord[k].x, texCoord[k].y });
-                    unsigned int newIndex =
+                    auto newIndex =
                         static_cast<unsigned int>(vertices.size() - 1);
                     indices.push_back(newIndex);
                     packedVerticesMap[vertex] = newIndex;
@@ -271,7 +275,7 @@ float* AssetLoader::LoadImageFile(const std::string& path, int* width,
 {
     float* pixels =
         stbi_loadf(path.c_str(), width, height, channel, STBI_rgb_alpha);
-    if (pixels == NULL || width == 0 || height == 0 || channel == 0)
+    if (pixels == nullptr || *width == 0 || *height == 0 || *channel == 0)
     {
         std::cerr << "[AssetLoader:LoadImageFile] Failed to load " << path
                   << std::endl;

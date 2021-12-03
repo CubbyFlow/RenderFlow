@@ -9,7 +9,7 @@
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "enableMicrosoftCodeAnalysis": true
+      "enableClangTidyCodeAnalysis": true
     },
     {
       "name": "x64-Debug",
@@ -20,7 +20,7 @@
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "enableMicrosoftCodeAnalysis": true
+      "enableClangTidyCodeAnalysis": true
     },
     {
       "name": "x86-Debug",
@@ -31,7 +31,7 @@
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "enableMicrosoftCodeAnalysis": true
+      "enableClangTidyCodeAnalysis": true
     },
     {
       "name": "x86-Release",
@@ -42,7 +42,7 @@
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "enableMicrosoftCodeAnalysis": true
+      "enableClangTidyCodeAnalysis": true
     }
   ]
 }

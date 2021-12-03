@@ -45,7 +45,7 @@ class PostProcessing
      * @brief Resize the generated resoures
      * @param extent framebuffer and color & depth texture extent
      */
-    void Resize(const glm::ivec2& extent);
+    void Resize(const glm::ivec2& extent) const;
 
     /**
      * @brief Cleanup the generated resources

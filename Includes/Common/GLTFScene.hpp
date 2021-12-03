@@ -31,12 +31,12 @@ class GLTFScene
     /**
      * @brief Construct a new GLTFScene object
      */
-    GLTFScene();
+    GLTFScene() = default;
 
     /**
      * @brief Destroy the GLTFScene object
      */
-    virtual ~GLTFScene();
+    virtual ~GLTFScene() = default;
 
     /**
      * @brief Load GLTFScene from the given scene filename and generate buffers
@@ -48,7 +48,7 @@ class GLTFScene
      * @return false if gltf scene loading failed
      */
     bool Initialize(const std::string& filename, VertexFormat format,
-                    ImageCallback imageCallback = nullptr);
+                    const ImageCallback& imageCallback = nullptr);
 
     /**
      * @brief Update scene animation

@@ -29,7 +29,7 @@ class SkyDome
     /**
      * @brief Construct a new Sky Dome object
      */
-    SkyDome();
+    SkyDome() = default;
 
     /**
      * @brief Destroy the Sky Dome object
@@ -88,7 +88,7 @@ class SkyDome
      * @param numMips number of mips
      */
     void RenderToCube(GLuint fbo, GLuint texture, Shader* shader,
-                      unsigned int dim, const unsigned int numMips);
+                      unsigned int dim, unsigned int numMips);
 
     /**
      * @brief Create a Environment Accel Texture object
@@ -96,7 +96,7 @@ class SkyDome
      * @param size environment hdr image resolution
      * @param accelTexture target texture for storing computed texels
      */
-    void CreateEnvironmentAccelTexture(const float* pixels, glm::uvec2 size,
+    static void CreateEnvironmentAccelTexture(const float* pixels, glm::uvec2 size,
                                        GLuint accelTexture);
     
     /**

@@ -9,11 +9,6 @@ PerspectiveCamera::PerspectiveCamera()
     //! Do nothing
 }
 
-PerspectiveCamera::~PerspectiveCamera()
-{
-    //! Do nothing
-}
-
 void PerspectiveCamera::SetProperties(float aspect, float fovDegree,
                                       float zNear, float zFar)
 {

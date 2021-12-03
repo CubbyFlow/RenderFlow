@@ -8,11 +8,6 @@ BoundingBox::BoundingBox()
     Reset();
 }
 
-BoundingBox::~BoundingBox()
-{
-    //! Do nothing
-}
-
 BoundingBox::BoundingBox(const BoundingBox& bb)
 {
     this->_upperCorner = bb._upperCorner;

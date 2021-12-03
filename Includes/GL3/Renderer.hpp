@@ -3,6 +3,7 @@
 
 #include <GL3/DebugUtils.hpp>
 #include <GL3/GLTypes.hpp>
+#include <GL3/PostProcessing.hpp>
 #include <cxxopts.hpp>
 #include <memory>
 #include <string>
@@ -13,7 +14,6 @@ namespace GL3
 {
 class Application;
 class Window;
-class PostProcessing;
 
 /**
  * @brief OpenGL Renderer managing whole resources
@@ -33,7 +33,7 @@ class Renderer
     /**
      * @brief Destroy the Renderer object
      */
-    virtual ~Renderer();
+    virtual ~Renderer() = default;
 
     /**
      * @brief Initialize the Renderer
@@ -51,7 +51,7 @@ class Renderer
      * @return true if app instance initialization success
      * @return false if app instance initialization failed
      */
-    bool AddApplication(std::shared_ptr<Application> app,
+    bool AddApplication(const std::shared_ptr<Application>& app,
                         const cxxopts::ParseResult& configure);
 
     /**
@@ -96,7 +96,7 @@ class Renderer
      * @brief Switch the current app to the next given application
      * @param app smart pointer to application instance
      */
-    void SwitchApplication(std::shared_ptr<GL3::Application> app);
+    void SwitchApplication(const std::shared_ptr<GL3::Application>& app);
 
     /**
      * @brief Switch the current app to the next given application
@@ -122,7 +122,7 @@ class Renderer
      * @brief End of GPU Time measurement and returns elapsed time
      * @return size_t returns elapsed time in milliseconds
      */
-    size_t EndGPUMeasure();
+    size_t EndGPUMeasure() const;
 
     std::weak_ptr<GL3::Application> _currentApp;
     std::vector<std::shared_ptr<GL3::Application> > _applications;
@@ -142,7 +142,7 @@ class Renderer
      * @param xpos cursor position x in the screen viewport
      * @param ypos cursor position y in the screen viewport
      */
-    void ProcessCursorPos(double xpos, double ypos);
+    void ProcessCursorPos(double xpos, double ypos) const;
 
     /**
      * @brief Resize the renderer resources

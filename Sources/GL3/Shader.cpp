@@ -23,13 +23,13 @@ std::string PreprocessShaderInclude(const std::string& path,
     //! Load shader source file.
     std::ifstream file(path);
 
-    if (file.is_open() == false)
+    if (!file.is_open())
     {
         std::cerr << "Open shader source file failed" << path << std::endl;
         GL3::DebugUtils::PrintStack();
     }
 
-    std::string fullSourceCode = "";
+    std::string fullSourceCode;
     std::string temp;
     while (std::getline(file, temp))
     {
@@ -83,7 +83,7 @@ bool Shader::Initialize(const std::unordered_map<GLenum, std::string>& sources)
 
         int success;
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-        if (!success)
+        if (success == 0)
         {
             int length;
             glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
@@ -109,7 +109,7 @@ bool Shader::Initialize(const std::unordered_map<GLenum, std::string>& sources)
 
     int success;
     glGetProgramiv(_programID, GL_LINK_STATUS, &success);
-    if (!success)
+    if (success == 0)
     {
         int length;
         glGetProgramiv(_programID, GL_INFO_LOG_LENGTH, &length);
@@ -152,7 +152,9 @@ void Shader::BindFragDataLocation(const std::string& name,
 bool Shader::HasUniformVariable(const std::string& name)
 {
     if (_uniformCache.count(name) != 0)
+    {
         return true;
+    }
 
     GLint loc = GetUniformLocation(name);
 
@@ -163,26 +165,29 @@ GLint Shader::GetUniformLocation(const std::string& name)
 {
     auto iter = _uniformCache.find(name);
 
+    GLint location = -1;
     if (iter == _uniformCache.end())
     {
-        GLint loc = glGetUniformLocation(this->_programID, name.c_str());
-
-        if (loc == -1)
-            return -1;
-
-        _uniformCache.emplace(name, loc);
-        return loc;
+        location = glGetUniformLocation(this->_programID, name.c_str());
+        if (location != -1)
+        {
+            _uniformCache.emplace(name, location);
+        }
     }
     else
     {
-        return iter->second;
+        location = iter->second;
     }
+    return location;
 }
 
 void Shader::CleanUp()
 {
-    if (_programID)
+    if (_programID != 0)
+    {
         glDeleteProgram(_programID);
+        _programID = 0;
+    }
 }
 
 GLuint Shader::GetResourceID() const

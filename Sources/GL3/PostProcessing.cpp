@@ -18,7 +18,7 @@ PostProcessing::~PostProcessing()
 bool PostProcessing::Initialize()
 {
     glCreateFramebuffers(1, &_fbo);
-    _debug.SetObjectName(GL_FRAMEBUFFER, _fbo, "PostProcessing FrameBuffer");
+    DebugUtils::SetObjectName(GL_FRAMEBUFFER, _fbo, "PostProcessing FrameBuffer");
 
     glCreateTextures(GL_TEXTURE_2D, 1, &_color);
     glTextureParameteri(_color, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -26,7 +26,7 @@ bool PostProcessing::Initialize()
     glTextureParameteri(_color, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTextureParameteri(_color, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glNamedFramebufferTexture(_fbo, GL_COLOR_ATTACHMENT0, _color, 0);
-    _debug.SetObjectName(GL_TEXTURE, _color, "PostProcessing Color Attachment");
+    DebugUtils::SetObjectName(GL_TEXTURE, _color, "PostProcessing Color Attachment");
 
     glCreateTextures(GL_TEXTURE_2D, 1, &_depth);
     glTextureParameteri(_depth, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -34,7 +34,7 @@ bool PostProcessing::Initialize()
     glTextureParameteri(_depth, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTextureParameteri(_depth, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glNamedFramebufferTexture(_fbo, GL_DEPTH_ATTACHMENT, _depth, 0);
-    _debug.SetObjectName(GL_TEXTURE, _depth, "PostProcessing Depth Attachment");
+    DebugUtils::SetObjectName(GL_TEXTURE, _depth, "PostProcessing Depth Attachment");
 
     glCreateVertexArrays(1, &_vao);
     _shader = std::make_unique<GL3::Shader>();
@@ -69,7 +69,7 @@ void PostProcessing::Render() const
     glBindVertexArray(0);
 }
 
-void PostProcessing::Resize(const glm::ivec2& extent)
+void PostProcessing::Resize(const glm::ivec2& extent) const
 {
     glTextureStorage2D(_color, 1, GL_RGB8, extent.x, extent.y);
     glTextureStorage2D(_depth, 1, GL_DEPTH_COMPONENT24, extent.x, extent.y);
@@ -77,12 +77,21 @@ void PostProcessing::Resize(const glm::ivec2& extent)
 
 void PostProcessing::CleanUp()
 {
-    if (_depth)
+    if (_depth != 0)
+    {
         glDeleteTextures(1, &_depth);
-    if (_color)
+        _depth = 0;
+    }
+    if (_color != 0)
+    {
         glDeleteTextures(1, &_color);
-    if (_fbo)
+        _color = 0;
+    }
+    if (_fbo != 0)
+    {
         glDeleteFramebuffers(1, &_fbo);
+        _fbo = 0;
+    }
 }
 
 };  // namespace GL3

@@ -14,7 +14,7 @@
 
 #if defined(WINDOWS) && defined(_MSC_VER)
 #include <BaseTsd.h>
-typedef SSIZE_T ssize_t;
+using ssize_t = SSIZE_T;
 #else
 #include <sys/types.h>
 #endif
